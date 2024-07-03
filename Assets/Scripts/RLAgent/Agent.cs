@@ -5,10 +5,11 @@ using UnityEngine;
 public class Agent : MonoBehaviour
 {
     [Header("Settings")][Space(10)]
-    public AgentObserver agentObserver;
+    public AgentObserverBase agentObserver;
 
     void Start()
     {
+
 
     }
 

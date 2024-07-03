@@ -81,7 +81,6 @@
     <Compile Include="Assets/RosMessages/Std/msg/CharMsg.cs" />
     <Compile Include="Assets/RosMessages/Std/msg/Float64MultiArrayMsg.cs" />
     <Compile Include="Assets/RosMessages/Std/msg/ByteMultiArrayMsg.cs" />
-    <Compile Include="Assets/Scripts/RLAgent/AgentObserver.cs" />
     <Compile Include="Assets/RosMessages/Std/msg/UInt16Msg.cs" />
     <Compile Include="Assets/RosMessages/Std/msg/UInt32MultiArrayMsg.cs" />
     <Compile Include="Assets/RosMessages/Std/msg/MultiArrayDimensionMsg.cs" />
@@ -92,11 +91,14 @@
     <Compile Include="Assets/RosMessages/Std/msg/ColorRGBAMsg.cs" />
     <Compile Include="Assets/RosMessages/Std/msg/MultiArrayLayoutMsg.cs" />
     <Compile Include="Assets/RosMessages/Std/msg/UInt8MultiArrayMsg.cs" />
+    <Compile Include="Assets/Scripts/RLAgent/QuadrupedAgent/QuadrupedAgentObserver.cs" />
     <Compile Include="Assets/RosMessages/Std/msg/UInt8Msg.cs" />
+    <Compile Include="Assets/Scripts/RLAgent/IAgentObserver.cs" />
     <Compile Include="Assets/Scripts/UI/UIController.cs" />
     <Compile Include="Assets/RosMessages/Std/msg/UInt32Msg.cs" />
     <Compile Include="Assets/RosMessages/Std/msg/Int32MultiArrayMsg.cs" />
     <Compile Include="Assets/RosMessages/Std/msg/Int8MultiArrayMsg.cs" />
+    <Compile Include="Assets/Scripts/RLAgent/AgentObserverBase.cs" />
     <Compile Include="Assets/RosMessages/Std/msg/Int16Msg.cs" />
   </ItemGroup>
   <ItemGroup>

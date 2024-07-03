@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AgentObserver : MonoBehaviour
+public class QuadrupedAgentObserver : AgentObserverBase
 {
     [Header("Body Parts")][Space(10)] 
     public Transform body;
@@ -66,7 +66,7 @@ public class AgentObserver : MonoBehaviour
         
     }
 
-    public List<float> GetObservations()
+    public override List<float> GetObservations()
     {
         observation_list = new List<float>();
         AddObservation(articulationBody_RH_HIP.jointPosition[0],name:"[articulationBody_RH_HIP.jointPosition[0]]");
