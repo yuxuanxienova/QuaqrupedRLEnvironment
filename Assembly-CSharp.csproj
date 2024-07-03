@@ -66,8 +66,38 @@
   <ItemGroup>
     <Compile Include="Assets/Scripts/Utilities/ExtensionMethods.cs" />
     <Compile Include="Assets/Scripts/RLAgent/Agent.cs" />
+    <Compile Include="Assets/RosMessages/Std/msg/BoolMsg.cs" />
+    <Compile Include="Assets/RosMessages/Std/msg/StringMsg.cs" />
+    <Compile Include="Assets/RosMessages/Std/msg/Int8Msg.cs" />
+    <Compile Include="Assets/RosMessages/Std/msg/Int32Msg.cs" />
+    <Compile Include="Assets/RosMessages/Std/msg/UInt16MultiArrayMsg.cs" />
+    <Compile Include="Assets/RosMessages/Std/msg/Int16MultiArrayMsg.cs" />
+    <Compile Include="Assets/RosMessages/Std/msg/Int64Msg.cs" />
+    <Compile Include="Assets/RosMessages/Std/msg/Int64MultiArrayMsg.cs" />
+    <Compile Include="Assets/RosMessages/Std/msg/Float32Msg.cs" />
+    <Compile Include="Assets/RosMessages/Std/msg/EmptyMsg.cs" />
+    <Compile Include="Assets/RosMessages/Std/msg/Float64Msg.cs" />
+    <Compile Include="Assets/Scripts/Ros_Unity/PublishObservationList.cs" />
+    <Compile Include="Assets/RosMessages/Std/msg/CharMsg.cs" />
+    <Compile Include="Assets/RosMessages/Std/msg/Float64MultiArrayMsg.cs" />
+    <Compile Include="Assets/RosMessages/Std/msg/ByteMultiArrayMsg.cs" />
     <Compile Include="Assets/Scripts/RLAgent/AgentObserver.cs" />
+    <Compile Include="Assets/RosMessages/Std/msg/UInt16Msg.cs" />
+    <Compile Include="Assets/RosMessages/Std/msg/UInt32MultiArrayMsg.cs" />
+    <Compile Include="Assets/RosMessages/Std/msg/MultiArrayDimensionMsg.cs" />
+    <Compile Include="Assets/RosMessages/Std/msg/UInt64Msg.cs" />
+    <Compile Include="Assets/RosMessages/Std/msg/ByteMsg.cs" />
+    <Compile Include="Assets/RosMessages/Std/msg/UInt64MultiArrayMsg.cs" />
+    <Compile Include="Assets/RosMessages/Std/msg/Float32MultiArrayMsg.cs" />
+    <Compile Include="Assets/RosMessages/Std/msg/ColorRGBAMsg.cs" />
+    <Compile Include="Assets/RosMessages/Std/msg/MultiArrayLayoutMsg.cs" />
+    <Compile Include="Assets/RosMessages/Std/msg/UInt8MultiArrayMsg.cs" />
+    <Compile Include="Assets/RosMessages/Std/msg/UInt8Msg.cs" />
     <Compile Include="Assets/Scripts/UI/UIController.cs" />
+    <Compile Include="Assets/RosMessages/Std/msg/UInt32Msg.cs" />
+    <Compile Include="Assets/RosMessages/Std/msg/Int32MultiArrayMsg.cs" />
+    <Compile Include="Assets/RosMessages/Std/msg/Int8MultiArrayMsg.cs" />
+    <Compile Include="Assets/RosMessages/Std/msg/Int16Msg.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets/TextMesh Pro/Shaders/TMPro.cginc" />
