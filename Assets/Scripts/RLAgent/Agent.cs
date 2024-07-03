@@ -4,15 +4,21 @@ using UnityEngine;
 
 public class Agent : MonoBehaviour
 {
-    // Start is called before the first frame update
+    [Header("Settings")][Space(10)]
+    public AgentObserver agentObserver;
+
     void Start()
     {
-        
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        Debug.Log("log");
+    }
+
+    public List<float> GetObservation()
+    {
+        return agentObserver.GetObservations();
     }
 }
