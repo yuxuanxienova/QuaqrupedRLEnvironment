@@ -37,7 +37,6 @@ public class QuadrupedAgentObserver : AgentObserverBase
     private ArticulationBody articulationBody_LF_THIGH;
     private ArticulationBody articulationBody_LF_SHANK;
 
-    private List<float> observation_list;
     void Start()
     {
         articulationBody_Body = body.GetComponent<ArticulationBody>();
@@ -69,101 +68,10 @@ public class QuadrupedAgentObserver : AgentObserverBase
     public override List<float> GetObservations()
     {
         observation_list = new List<float>();
-        AddObservation(articulationBody_RH_HIP.jointPosition[0],name:"[articulationBody_RH_HIP.jointPosition[0]]");
-        AddObservation(articulationBody_RH_THIGH.jointPosition[0],name:"[articulationBody_RH_THIGH.jointPosition[0]]");
-        AddObservation(articulationBody_RH_SHANK.jointPosition[0],name:"[articulationBody_RH_SHANK.jointPosition[0]]");
+        AddToObservationList(articulationBody_RH_HIP.jointPosition[0],name:"[articulationBody_RH_HIP.jointPosition[0]]");
+        AddToObservationList(articulationBody_RH_THIGH.jointPosition[0],name:"[articulationBody_RH_THIGH.jointPosition[0]]");
+        AddToObservationList(articulationBody_RH_SHANK.jointPosition[0],name:"[articulationBody_RH_SHANK.jointPosition[0]]");
         return observation_list;
     }
 
-
-    //Utilities
-    void AddFloatObs(float obs, string name)
-    {
-        if (float.IsNaN(obs))
-        {
-            Debug.LogError("[ERROR][AgentObserver][AddFloatObs]" + name + " is NaN !!!");
-        }
-        if (float.IsInfinity(obs))
-        {
-            Debug.LogError("[ERROR][AgentObserver][AddFloatObs]" + name + " is Infinity !!!");
-        }
-
-        observation_list.Add(obs);
-        //Print Info
-        Debug.Log("[INFO][AgentObserver][AddFloatObs]"+ name + " is " + obs);
-    }
-
-    // Compatibility methods with Agent observation. These should be removed eventually.
-
-    /// <summary>
-    /// Adds a float observation to the vector observations of the agent.
-    /// </summary>
-    /// <param name="observation">Observation.</param>
-    public void AddObservation(float observation, string name)
-    {
-        AddFloatObs(observation, name);
-    }
-
-    /// <summary>
-    /// Adds an integer observation to the vector observations of the agent.
-    /// </summary>
-    /// <param name="observation">Observation.</param>
-    public void AddObservation(int observation, string name)
-    {
-        AddFloatObs(observation, name);
-    }
-
-    /// <summary>
-    /// Adds an Vector3 observation to the vector observations of the agent.
-    /// </summary>
-    /// <param name="observation">Observation.</param>
-    public void AddObservation(Vector3 observation, string name)
-    {
-        AddFloatObs(observation.x, name + "[x]");
-        AddFloatObs(observation.y, name + "[y]");
-        AddFloatObs(observation.z, name + "[z]");
-    }
-
-    /// <summary>
-    /// Adds an Vector2 observation to the vector observations of the agent.
-    /// </summary>
-    /// <param name="observation">Observation.</param>
-    public void AddObservation(Vector2 observation, string name)
-    {
-        AddFloatObs(observation.x, name + "[x]");
-        AddFloatObs(observation.y, name + "[y]");
-    }
-
-    /// <summary>
-    /// Adds a list or array of float observations to the vector observations of the agent.
-    /// </summary>
-    /// <param name="observation">Observation.</param>
-    public void AddObservation(IList<float> observation, string name)
-    {
-        for (var i = 0; i < observation.Count; i++)
-        {
-            AddFloatObs(observation[i], name +"["+i+"]");
-        }
-    }
-
-    /// <summary>
-    /// Adds a quaternion observation to the vector observations of the agent.
-    /// </summary>
-    /// <param name="observation">Observation.</param>
-    public void AddObservation(Quaternion observation, string name)
-    {
-        AddFloatObs(observation.x, name + "[x]");
-        AddFloatObs(observation.y, name + "[y]");
-        AddFloatObs(observation.z, name + "[z]");
-        AddFloatObs(observation.w, name + "[w]");
-    }
-
-    /// <summary>
-    /// Adds a boolean observation to the vector observation of the agent.
-    /// </summary>
-    /// <param name="observation">Observation.</param>
-    public void AddObservation(bool observation)
-    {
-        AddFloatObs(observation ? 1f : 0f, name);
-    }
 }

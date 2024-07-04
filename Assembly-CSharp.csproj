@@ -70,6 +70,7 @@
     <Compile Include="Assets/RosMessages/Std/msg/StringMsg.cs" />
     <Compile Include="Assets/RosMessages/Std/msg/Int8Msg.cs" />
     <Compile Include="Assets/RosMessages/Std/msg/Int32Msg.cs" />
+    <Compile Include="Assets/Scripts/RLAgent/AgentControllerBase.cs" />
     <Compile Include="Assets/RosMessages/Std/msg/UInt16MultiArrayMsg.cs" />
     <Compile Include="Assets/RosMessages/Std/msg/Int16MultiArrayMsg.cs" />
     <Compile Include="Assets/RosMessages/Std/msg/Int64Msg.cs" />
@@ -88,13 +89,16 @@
     <Compile Include="Assets/RosMessages/Std/msg/ByteMsg.cs" />
     <Compile Include="Assets/RosMessages/Std/msg/UInt64MultiArrayMsg.cs" />
     <Compile Include="Assets/RosMessages/Std/msg/Float32MultiArrayMsg.cs" />
+    <Compile Include="Assets/Scripts/RLAgent/PendulumAgent/PendulumAgentObserver.cs" />
     <Compile Include="Assets/RosMessages/Std/msg/ColorRGBAMsg.cs" />
     <Compile Include="Assets/RosMessages/Std/msg/MultiArrayLayoutMsg.cs" />
     <Compile Include="Assets/RosMessages/Std/msg/UInt8MultiArrayMsg.cs" />
     <Compile Include="Assets/Scripts/RLAgent/QuadrupedAgent/QuadrupedAgentObserver.cs" />
     <Compile Include="Assets/RosMessages/Std/msg/UInt8Msg.cs" />
+    <Compile Include="Assets/Scripts/RLAgent/PendulumAgent/PendulumAgentController.cs" />
     <Compile Include="Assets/Scripts/RLAgent/IAgentObserver.cs" />
     <Compile Include="Assets/Scripts/UI/UIController.cs" />
+    <Compile Include="Assets/Scripts/RLAgent/IAgentController.cs" />
     <Compile Include="Assets/RosMessages/Std/msg/UInt32Msg.cs" />
     <Compile Include="Assets/RosMessages/Std/msg/Int32MultiArrayMsg.cs" />
     <Compile Include="Assets/RosMessages/Std/msg/Int8MultiArrayMsg.cs" />
@@ -987,12 +991,12 @@
       <HintPath>Library/ScriptAssemblies/UnityEngine.UI.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Unity.VisualScripting.Core.Editor">
-      <HintPath>Library/ScriptAssemblies/Unity.VisualScripting.Core.Editor.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="Unity.Robotics.ROSTCPConnector">
       <HintPath>Library/ScriptAssemblies/Unity.Robotics.ROSTCPConnector.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.VisualScripting.Core.Editor">
+      <HintPath>Library/ScriptAssemblies/Unity.VisualScripting.Core.Editor.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Unity.Rider.Editor">
@@ -1035,12 +1039,12 @@
       <HintPath>Library/ScriptAssemblies/Unity.TestTools.CodeCoverage.Editor.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Unity.TestTools.CodeCoverage.Editor.OpenCover.Model">
-      <HintPath>Library/ScriptAssemblies/Unity.TestTools.CodeCoverage.Editor.OpenCover.Model.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="Unity.Robotics.UrdfImporter">
       <HintPath>Library/ScriptAssemblies/Unity.Robotics.UrdfImporter.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.TestTools.CodeCoverage.Editor.OpenCover.Model">
+      <HintPath>Library/ScriptAssemblies/Unity.TestTools.CodeCoverage.Editor.OpenCover.Model.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="vhacd">
