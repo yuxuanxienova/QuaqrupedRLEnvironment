@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class AgentObserverBase : MonoBehaviour, IAgentObserver
+public abstract class AgentObserverBase : MonoBehaviour
 {
     public abstract List<float> GetObservations();
     protected List<float> observation_list;

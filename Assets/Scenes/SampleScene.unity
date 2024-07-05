@@ -1011,6 +1011,8 @@ GameObject:
   - component: {fileID: 1075262943}
   - component: {fileID: 1075262945}
   - component: {fileID: 1075262944}
+  - component: {fileID: 1075262946}
+  - component: {fileID: 1075262947}
   m_Layer: 0
   m_Name: PendulumAgent
   m_TagString: Untagged
@@ -1061,7 +1063,36 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   agentObserver: {fileID: 1075262944}
-  agentController: {fileID: 0}
+  agentController: {fileID: 1075262947}
+  agentRewardCalculator: {fileID: 1075262946}
+--- !u!114 &1075262946
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1075262942}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2e04a5d8c4012b92e806067a511d6fe7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  joint_revolute: {fileID: 483125549}
+  revolute_joint_reference: 0
+--- !u!114 &1075262947
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1075262942}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 06458031333592ed88472775b161cc38, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  joint_prismatic: {fileID: 358949631}
+  joint_revolute: {fileID: 483125549}
 --- !u!1 &1137445989
 GameObject:
   m_ObjectHideFlags: 0
@@ -1275,7 +1306,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   topicName: /unity/RL_Agent/transition
   agent: {fileID: 1075262945}
-  publishMessageFrequency: 0.5
+  publishMessageInterval: 0.5
 --- !u!1 &1439644709
 GameObject:
   m_ObjectHideFlags: 0

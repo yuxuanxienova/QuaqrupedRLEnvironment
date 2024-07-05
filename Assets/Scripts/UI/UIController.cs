@@ -19,7 +19,7 @@ public class UIController : MonoBehaviour
     }
     public void TestGetObservationCLicked()
     {
-        string floatListToString = ExtensionMethods.ListToString(agent.GetObservation());
+        string floatListToString = ExtensionMethods.FloatArrayToString(agent.GetObservation());
         Debug.Log("[INFO][UIController][TestGetObservationCLicked]ObservationList:"+floatListToString);
     }
 

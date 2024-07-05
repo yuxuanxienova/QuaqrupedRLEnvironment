@@ -26,7 +26,7 @@ public class PublishObservationList : MonoBehaviour
         {
             //Create the Message
             Float32MultiArrayMsg message = new Float32MultiArrayMsg();
-            message.data = agent.GetObservation().ToArray();
+            message.data = agent.GetObservation();
             //Publish Message
             rosConnection.Publish(topicName,message);
             timeElapsed = 0;

@@ -1,6 +1,7 @@
 using System; 
 using System.Collections.Generic; 
 using UnityEngine; 
+using System.Linq;
 public static class ExtensionMethods 
 { 
     //ROS-Unity Conversion
@@ -39,6 +40,11 @@ public static class ExtensionMethods
     public static  string ListToString(List<float> list)
     {
         return string.Join(", ", list);
+    }
+    public static  string FloatArrayToString(float[] array)
+    {
+        // Using Select to format each float before joining
+        return string.Join(", ", array.Select(f => f.ToString("F2")));
     }
 
 } 

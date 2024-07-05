@@ -15,6 +15,13 @@ public class PendulumAgentController : AgentControllerBase
         articulationBody_joint_prismatic = joint_prismatic.GetComponent<ArticulationBody>();
         articulationBody_joint_revolute = joint_revolute.GetComponent<ArticulationBody>();
     }
+
+
+    // Update is called once per frame
+    void Update()
+    {
+        
+    }
     public override void SetAction(List<float> _action_list)
     {
         //Action Space is 4
@@ -28,9 +35,5 @@ public class PendulumAgentController : AgentControllerBase
         action_list =_action_list;
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+
 }
