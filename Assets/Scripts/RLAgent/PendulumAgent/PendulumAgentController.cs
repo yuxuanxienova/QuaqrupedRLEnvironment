@@ -5,6 +5,12 @@ using UnityEngine;
 public class PendulumAgentController : AgentControllerBase
 {
     public Transform joint_prismatic;
+    public float joint_prismatic_stiffness_ub=200;
+    public float joint_prismatic_stiffness_lb=30;
+    public float joint_prismatic_target_ub=10;
+    public float joint_prismatic_target_lb=-10;
+
+
     public Transform joint_revolute;
 
     private ArticulationBody articulationBody_joint_prismatic;
@@ -14,6 +20,7 @@ public class PendulumAgentController : AgentControllerBase
     {
         articulationBody_joint_prismatic = joint_prismatic.GetComponent<ArticulationBody>();
         articulationBody_joint_revolute = joint_revolute.GetComponent<ArticulationBody>();
+        SetAction(new List<float>{0,0,0,0});
     }
 
 
@@ -22,14 +29,15 @@ public class PendulumAgentController : AgentControllerBase
     {
         
     }
+
     public override void SetAction(List<float> _action_list)
     {
-        //Action Space is 4
+        //Each action in action list range from -1 to 1, need to convert to right scale
+        float joint_prismatic_stiffness = MapValue(_action_list[0],fromLow:-1,fromHigh:1,toLow:joint_prismatic_stiffness_lb,toHigh:joint_prismatic_stiffness_ub);
+        float joint_prismatic_target = MapValue(_action_list[1],fromLow:-1,fromHigh:1,toLow:joint_prismatic_target_lb,toHigh:joint_prismatic_target_ub);
+        //Action Space is 2
         articulationBody_joint_prismatic.SetDriveStiffness(ArticulationDriveAxis.X,_action_list[0]);
         articulationBody_joint_prismatic.SetDriveTarget(ArticulationDriveAxis.X,_action_list[1]);
-
-        articulationBody_joint_revolute.SetDriveStiffness(ArticulationDriveAxis.X,_action_list[2]);
-        articulationBody_joint_revolute.SetDriveTarget(ArticulationDriveAxis.X,_action_list[3]);
 
         //Store the action list
         action_list =_action_list;

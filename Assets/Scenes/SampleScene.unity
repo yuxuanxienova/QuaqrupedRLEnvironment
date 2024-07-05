@@ -1443,7 +1443,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   topicName: /unity/RL_Agent/transition
   agent: {fileID: 1075262945}
-  publishMessageInterval: 0.5
+  publishMessageInterval: 0.1
 --- !u!1 &1439644709
 GameObject:
   m_ObjectHideFlags: 0

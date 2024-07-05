@@ -13,4 +13,15 @@ public abstract class AgentControllerBase : MonoBehaviour
 
     protected List<float> action_list;
 
+    public static float MapValue(float value, float fromLow, float fromHigh, float toLow, float toHigh)
+    {
+        // Normalize the value to the range [0, 1]
+        float normalizedValue = (value - fromLow) / (fromHigh - fromLow);
+        
+        // Map the normalized value to the target range
+        float mappedValue = toLow + normalizedValue * (toHigh - toLow);
+        
+        return mappedValue;
+    }
+
 }

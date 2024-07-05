@@ -5,8 +5,9 @@ import torch.nn as nn
 import numpy as np
 import warnings
 from typing import Union
-from utils import ReplayBuffer, get_env, run_episode
+# from utils import ReplayBuffer, get_env, run_episode
 import torch.nn.functional as F
+from ReplayBuffer import ReplayBuffer
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 warnings.filterwarnings("ignore", category=UserWarning)
 
@@ -16,30 +17,28 @@ class NeuralNetwork(nn.Module):
     You may use this function to parametrize your policy and critic networks.
     '''
     def __init__(self, input_dim: int, output_dim: int, hidden_size: int, 
-                                hidden_layers: int, activation: str):
+                                hidden_layers: int, activation: str, dtype=torch.float64):
         super(NeuralNetwork, self).__init__()
-
-        # TODO: Implement this function which should define a neural network 
-        # with a variable number of hidden layers and hidden units.
-        # Here you should define layers which your network will use.
+        
+        self.dtype = dtype
         
         self.activation = activation
         #---------1.Pre Processing---------------------
-        self.layer_pre = nn.Linear(input_dim, hidden_size)
+        self.layer_pre = nn.Linear(input_dim, hidden_size).to(self.dtype)
         
         #---------2. Deep Layers with constant size------
         hiddenLayerLists = []
         for i in range(hidden_layers):
-            hiddenLayerLists.append(nn.Linear(hidden_size,hidden_size))
+            hiddenLayerLists.append(nn.Linear(hidden_size,hidden_size).to(self.dtype))
             hiddenLayerLists.append(nn.ReLU())
         self.hiddenLayers = nn.Sequential(*hiddenLayerLists)
         
         #---------3. Post Processing------------
-        self.layer_post = nn.Linear(hidden_size, output_dim)
+        self.layer_post = nn.Linear(hidden_size, output_dim).to(self.dtype)
         
         
     def forward(self, s: torch.Tensor) -> torch.Tensor:
-        # TODO: Implement the forward pass for the neural network you have defined.
+        s = s.to(self.dtype)
         s = self.layer_pre(s)
         s = F.relu(s)
         s = self.hiddenLayers(s)
@@ -117,7 +116,8 @@ class Actor:
         :param action: torch.Tensor, action the policy returns for the state.
         :param log_prob: log_probability of the the action.
         '''
-        assert state.shape == (3,) or state.shape[1] == self.state_dim, 'State passed to this method has a wrong shape'
+        assert state.shape == (self.state_dim,) or state.shape[1] == self.state_dim, 'State passed to this method has a wrong shape'
+        
         action , log_prob = torch.zeros(state.shape[0]), torch.ones(state.shape[0])
         # TODO: Implement this function which returns an action and its log probability.
         # If working with stochastic policies, make sure that its log_std are clamped 
@@ -233,11 +233,11 @@ class TrainableParameter:
         return self.log_param
 
 
-class Agent:
-    def __init__(self):
+class SAC_Agent:
+    def __init__(self,state_dim,action_dim):
         # Environment variables. You don't need to change this.
-        self.state_dim = 2  # [cos(theta), sin(theta), theta_dot]
-        self.action_dim = 2  # [torque] in[-1,1]
+        self.state_dim = state_dim
+        self.action_dim = action_dim
 
         self.batch_size = 200#200
         self.min_buffer_size = 1000
@@ -278,14 +278,11 @@ class Agent:
 
     def get_action(self, s: np.ndarray, train: bool) -> np.ndarray:
         """
-        :param s: np.ndarray, state of the pendulum. shape (3, )
+        :param s: np.ndarray, state. shape (state_dim, )
         :param train: boolean to indicate if you are in eval or train mode. 
                     You can find it useful if you want to sample from deterministic policy.
-        :return: np.ndarray,, action to apply on the environment, shape (1,)
-        """
-        # TODO: Implement a function that returns an action from the policy for the state s.
-        # action = np.random.uniform(-1, 1, (1,))
-        
+        :return: np.ndarray, action to apply on the environment, shape (action_dim,)
+        """        
         #if training, we schocahsticly sample action
         if(train):
             deterministic = 0
@@ -293,7 +290,7 @@ class Agent:
             deterministic = 1
         
         #Convert State to torch tensor
-        s = torch.from_numpy(s)
+        s = torch.tensor(s)
         #Move state to GPU
         s = s.to(self.device)
         #get action
@@ -302,7 +299,7 @@ class Agent:
         #Convert action to np array
         action = action.to("cpu")
         action = action.detach().numpy().reshape(-1)
-        assert action.shape == (1,), 'Incorrect action shape.'
+        assert action.shape == (self.action_dim,), 'Incorrect action shape.'
         assert isinstance(action, np.ndarray ), 'Action dtype must be np.ndarray' 
         return action
 
@@ -401,39 +398,40 @@ class Agent:
 # This main function is provided here to enable some basic testing. 
 # ANY changes here WON'T take any effect while grading.
 if __name__ == '__main__':
+    pass
 
-    TRAIN_EPISODES = 50
-    TEST_EPISODES = 200
+    # TRAIN_EPISODES = 50
+    # TEST_EPISODES = 200
 
-    # You may set the save_video param to output the video of one of the evalution episodes, or 
-    # you can disable console printing during training and testing by setting verbose to False.
-    save_video = True
-    verbose = True
+    # # You may set the save_video param to output the video of one of the evalution episodes, or 
+    # # you can disable console printing during training and testing by setting verbose to False.
+    # save_video = True
+    # verbose = True
 
-    agent = Agent()
-    env = get_env(g=10.0, train=True)
+    # agent = SAC_Agent()
+    # env = get_env(g=10.0, train=True)
 
-    for EP in range(TRAIN_EPISODES):
-        run_episode(env, agent, None, verbose, train=True)
+    # for EP in range(TRAIN_EPISODES):
+    #     run_episode(env, agent, None, verbose, train=True)
 
-    if verbose:
-        print('\n')
+    # if verbose:
+    #     print('\n')
 
-    test_returns = []
-    env = get_env(g=10.0, train=False)
+    # test_returns = []
+    # env = get_env(g=10.0, train=False)
 
-    if save_video:
-        video_rec = VideoRecorder(env, "pendulum_episode.mp4")
+    # if save_video:
+    #     video_rec = VideoRecorder(env, "pendulum_episode.mp4")
     
-    for EP in range(TEST_EPISODES):
-        rec = video_rec if (save_video and EP == TEST_EPISODES - 1) else None
-        with torch.no_grad():
-            episode_return = run_episode(env, agent, rec, verbose, train=False)
-        test_returns.append(episode_return)
+    # for EP in range(TEST_EPISODES):
+    #     rec = video_rec if (save_video and EP == TEST_EPISODES - 1) else None
+    #     with torch.no_grad():
+    #         episode_return = run_episode(env, agent, rec, verbose, train=False)
+    #     test_returns.append(episode_return)
 
-    avg_test_return = np.mean(np.array(test_returns))
+    # avg_test_return = np.mean(np.array(test_returns))
 
-    print("\n AVG_TEST_RETURN:{:.1f} \n".format(avg_test_return))
+    # print("\n AVG_TEST_RETURN:{:.1f} \n".format(avg_test_return))
 
-    if save_video:
-        video_rec.close()
+    # if save_video:
+    #     video_rec.close()

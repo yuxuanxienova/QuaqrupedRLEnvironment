@@ -9,85 +9,85 @@ AFFECT YOUR SUBMISSION RESULT IN THE CHECKER.
 from typing import Optional
 
 import numpy as np
-from gym.envs.classic_control import PendulumEnv
-import torch
-import random
+# from gym.envs.classic_control import PendulumEnv
+# import torch
+# import random
 from collections import deque
-from gym.wrappers.rescale_action import RescaleAction
-from gym.wrappers.time_limit import TimeLimit
+# from gym.wrappers.rescale_action import RescaleAction
+# from gym.wrappers.time_limit import TimeLimit
 
-class CustomPendulum(PendulumEnv):
-    def __init__(self, g: float = 10.0, eps: float = 0.0, *args, **kwargs):
-        super().__init__(g=g, *args, **kwargs)
-        self.eps = eps
+# class CustomPendulum(PendulumEnv):
+#     def __init__(self, g: float = 10.0, eps: float = 0.0, *args, **kwargs):
+#         super().__init__(g=g, *args, **kwargs)
+#         self.eps = eps
 
-    def reset(self, *, seed: Optional[int] = 0):
-        super().reset(seed=seed)
-        eps = self.eps
-        high = np.asarray([np.pi + eps, eps])
-        low = np.asarray([np.pi - eps, -eps])
-        self.state = self.np_random.uniform(low=low, high=high)
-        self.last_u = None
+#     def reset(self, *, seed: Optional[int] = 0):
+#         super().reset(seed=seed)
+#         eps = self.eps
+#         high = np.asarray([np.pi + eps, eps])
+#         low = np.asarray([np.pi - eps, -eps])
+#         self.state = self.np_random.uniform(low=low, high=high)
+#         self.last_u = None
 
-        if self.render_mode == "human":
-            self.render()
-        return self._get_obs(), {}
+#         if self.render_mode == "human":
+#             self.render()
+#         return self._get_obs(), {}
     
-class ReplayBuffer():
-    '''
-    This class implements a replay buffer for storing transitions. Upon every transition, 
-    it saves data into a buffer for later learning, which is later sampled for training the agent.
-    '''
-    def __init__(self, min_size, max_size, device):
-        self.buffer = deque(maxlen=max_size)
-        self.device = device
-        self.min_size = min_size
+# class ReplayBuffer():
+#     '''
+#     This class implements a replay buffer for storing transitions. Upon every transition, 
+#     it saves data into a buffer for later learning, which is later sampled for training the agent.
+#     '''
+#     def __init__(self, min_size, max_size, device):
+#         self.buffer = deque(maxlen=max_size)
+#         self.device = device
+#         self.min_size = min_size
 
-    def put(self, transition):
-        self.buffer.append(transition)
+#     def put(self, transition):
+#         self.buffer.append(transition)
 
-    def sample(self, n):
-        mini_batch = random.sample(self.buffer, n)
-        s_lst, a_lst, r_lst, s_prime_lst = [], [], [], []
+#     def sample(self, n):
+#         mini_batch = random.sample(self.buffer, n)
+#         s_lst, a_lst, r_lst, s_prime_lst = [], [], [], []
 
-        for transition in mini_batch:
-            s, a, r, s_prime = transition
-            s_lst.append(s)
-            a_lst.append([a.item()])
-            r_lst.append([r])
-            s_prime_lst.append(s_prime)
+#         for transition in mini_batch:
+#             s, a, r, s_prime = transition
+#             s_lst.append(s)
+#             a_lst.append([a.item()])
+#             r_lst.append([r])
+#             s_prime_lst.append(s_prime)
 
-        s_batch = torch.tensor(s_lst, dtype=torch.float, device = self.device)
-        a_batch = torch.tensor(a_lst, dtype=torch.float, device = self.device)
-        r_batch = torch.tensor(r_lst, dtype=torch.float, device = self.device)
-        s_prime_batch = torch.tensor(s_prime_lst, dtype=torch.float, device = self.device)
+#         s_batch = torch.tensor(s_lst, dtype=torch.float, device = self.device)
+#         a_batch = torch.tensor(a_lst, dtype=torch.float, device = self.device)
+#         r_batch = torch.tensor(r_lst, dtype=torch.float, device = self.device)
+#         s_prime_batch = torch.tensor(s_prime_lst, dtype=torch.float, device = self.device)
 
-        # Normalize rewards
-        r_batch = (r_batch - r_batch.mean()) / (r_batch.std() + 1e-7)
+#         # Normalize rewards
+#         r_batch = (r_batch - r_batch.mean()) / (r_batch.std() + 1e-7)
 
-        return s_batch, a_batch, r_batch, s_prime_batch
+#         return s_batch, a_batch, r_batch, s_prime_batch
 
-    def size(self):
-        return len(self.buffer)
+#     def size(self):
+#         return len(self.buffer)
 
-    def start_training(self):
-        # Training starts when the buffer collected enough training data.
-        return self.size() >= self.min_size
+#     def start_training(self):
+#         # Training starts when the buffer collected enough training data.
+#         return self.size() >= self.min_size
 
 
-def get_env(g=10.0, train=True):
-    '''
-    This function sets the environment for the agent.
-    :param g: gravity acceleration
-    :param train: whether the training or test environment is needed
+# def get_env(g=10.0, train=True):
+#     '''
+#     This function sets the environment for the agent.
+#     :param g: gravity acceleration
+#     :param train: whether the training or test environment is needed
 
-    Returns:
-    :return: The environment.
-    '''
-    eps = 0.1 if train else 0.0
-    env = TimeLimit(RescaleAction(CustomPendulum(render_mode='rgb_array', g=g, eps=eps),
-                                  min_action=-1, max_action=1), max_episode_steps=200)
-    return env
+#     Returns:
+#     :return: The environment.
+#     '''
+#     eps = 0.1 if train else 0.0
+#     env = TimeLimit(RescaleAction(CustomPendulum(render_mode='rgb_array', g=g, eps=eps),
+#                                   min_action=-1, max_action=1), max_episode_steps=200)
+#     return env
 
 
 def run_episode(env, agent, rec=None, verbose=False, train=True):
