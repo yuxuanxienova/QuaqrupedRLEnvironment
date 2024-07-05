@@ -25,6 +25,7 @@ class TrainnerNode:
     def run_node(self):
         #1.Register Function Runner
         self.run_function(self.updateAction,interval=0.5)
+        self.run_function(self.updateNetwork,interval=0.1)
         #2. Register Publishers
         self.register_event_publisher(topic_name="/trainner_node/event/set_action",data_class=Float32MultiArray,queue_size=30)
         #3.Register Subscribers
@@ -47,6 +48,11 @@ class TrainnerNode:
             # Publish the message
             action_publisher.publish(action_msg)
 
+    def updateNetwork(self,event):
+        print("[INFO][updateNetwork]self.agent.memory.size={0}".format(self.agent.memory.size()))
+        if(self.agent.memory.start_training()):
+            print("updateNetwork!")
+            self.agent.updateNetwork()
 
         
     # ------------------------------------Publishers-----------------------------

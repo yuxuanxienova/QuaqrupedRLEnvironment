@@ -240,7 +240,7 @@ class SAC_Agent:
         self.action_dim = action_dim
 
         self.batch_size = 200#200
-        self.min_buffer_size = 1000
+        self.min_buffer_size = 1000#1000
         self.max_buffer_size = 100000
         # If your PC possesses a GPU, you should be able to use it for training, 
         # as self.device should be 'cuda' in that case.
@@ -340,15 +340,12 @@ class SAC_Agent:
                                q2_value) + self.log_alpha.exp() * entropy
         td_target = rewards + self.gamma * next_value 
         return td_target
-    def train_agent(self):
+    def updateNetwork(self):
         '''
         This function represents one training iteration for the agent. It samples a batch 
         from the replay buffer,and then updates the policy and critic networks 
         using the sampled batch.
         '''
-        # TODO: Implement one step of training for the agent.
-        # Hint: You can use the run_gradient_update_step for each policy and critic.
-        # Example: self.run_gradient_update_step(self.policy, policy_loss)
 
         # Batch sampling
         batch = self.memory.sample(self.batch_size)
