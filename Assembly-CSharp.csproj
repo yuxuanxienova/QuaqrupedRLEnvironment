@@ -74,6 +74,7 @@
     <Compile Include="Assets/RosMessages/Std/msg/UInt16MultiArrayMsg.cs" />
     <Compile Include="Assets/RosMessages/Std/msg/Int16MultiArrayMsg.cs" />
     <Compile Include="Assets/RosMessages/Std/msg/Int64Msg.cs" />
+    <Compile Include="Assets/Scripts/Ros_Unity/SubscribeAction.cs" />
     <Compile Include="Assets/RosMessages/Std/msg/Int64MultiArrayMsg.cs" />
     <Compile Include="Assets/RosMessages/Std/msg/Float32Msg.cs" />
     <Compile Include="Assets/RosMessages/Std/msg/EmptyMsg.cs" />

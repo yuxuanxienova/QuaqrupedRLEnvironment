@@ -33,4 +33,9 @@ public class UIController : MonoBehaviour
         articulationBody.SetDriveTarget(ArticulationDriveAxis.X,5f);
 
     }
+    public void TestGetActionClicked()
+    {
+        string floatListToString = ExtensionMethods.FloatArrayToString(agent.GetAction());
+        Debug.Log("[INFO][UIController][TestGetActionClicked]ActionList:"+floatListToString);
+    }
 }

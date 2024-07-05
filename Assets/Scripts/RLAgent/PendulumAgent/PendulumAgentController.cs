@@ -36,8 +36,8 @@ public class PendulumAgentController : AgentControllerBase
         float joint_prismatic_stiffness = MapValue(_action_list[0],fromLow:-1,fromHigh:1,toLow:joint_prismatic_stiffness_lb,toHigh:joint_prismatic_stiffness_ub);
         float joint_prismatic_target = MapValue(_action_list[1],fromLow:-1,fromHigh:1,toLow:joint_prismatic_target_lb,toHigh:joint_prismatic_target_ub);
         //Action Space is 2
-        articulationBody_joint_prismatic.SetDriveStiffness(ArticulationDriveAxis.X,_action_list[0]);
-        articulationBody_joint_prismatic.SetDriveTarget(ArticulationDriveAxis.X,_action_list[1]);
+        articulationBody_joint_prismatic.SetDriveStiffness(ArticulationDriveAxis.X,joint_prismatic_stiffness);
+        articulationBody_joint_prismatic.SetDriveTarget(ArticulationDriveAxis.X,joint_prismatic_target);
 
         //Store the action list
         action_list =_action_list;

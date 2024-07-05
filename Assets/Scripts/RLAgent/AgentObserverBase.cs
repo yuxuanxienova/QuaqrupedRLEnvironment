@@ -20,7 +20,7 @@ public abstract class AgentObserverBase : MonoBehaviour
 
         observation_list.Add(obs);
         //Print Info
-        Debug.Log("[INFO][AgentObserver][AddFloatObs]"+ name + " is " + obs);
+        // Debug.Log("[INFO][AgentObserver][AddFloatObs]"+ name + " is " + obs);
     }
 
     // Compatibility methods with Agent observation. These should be removed eventually.
