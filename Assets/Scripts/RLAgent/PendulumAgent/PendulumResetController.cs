@@ -21,6 +21,7 @@ public class PendulumResetController : MonoBehaviour
         if (timeElapsed > resetInterval)
         {
             agent.Reset();
+            timeElapsed = 0;
 
         }
     }

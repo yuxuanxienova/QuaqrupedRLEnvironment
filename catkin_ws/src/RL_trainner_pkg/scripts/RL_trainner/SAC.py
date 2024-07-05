@@ -240,7 +240,7 @@ class SAC_Agent:
         self.action_dim = action_dim
 
         self.batch_size = 200#200
-        self.min_buffer_size = 1000#1000
+        self.min_buffer_size = 200#1000
         self.max_buffer_size = 100000
         # If your PC possesses a GPU, you should be able to use it for training, 
         # as self.device should be 'cuda' in that case.
