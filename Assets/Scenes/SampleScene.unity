@@ -1061,6 +1061,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   agentObserver: {fileID: 1075262944}
+  agentController: {fileID: 0}
 --- !u!1 &1137445989
 GameObject:
   m_ObjectHideFlags: 0
@@ -1222,6 +1223,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1436467592}
   - component: {fileID: 1436467593}
+  - component: {fileID: 1436467594}
   m_Layer: 0
   m_Name: Publishers
   m_TagString: Untagged
@@ -1257,6 +1259,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   topicName: /unity/RL_Agent/observationsList
+  agent: {fileID: 1075262945}
+  publishMessageFrequency: 0.5
+--- !u!114 &1436467594
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1436467591}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fb79cc7b76a48bbb5ae36ac250b45707, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  topicName: /unity/RL_Agent/transition
   agent: {fileID: 1075262945}
   publishMessageFrequency: 0.5
 --- !u!1 &1439644709

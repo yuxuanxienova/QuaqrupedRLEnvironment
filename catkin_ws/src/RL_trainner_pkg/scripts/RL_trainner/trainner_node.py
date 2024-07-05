@@ -7,6 +7,7 @@ import torch
 import PIL
 from std_msgs.msg import String
 from std_msgs.msg import Float32MultiArray
+from RL_trainner_pkg.msg import TransitionMsg
 class TrainnerNode:
     def __init__(self) -> None:
         # initialize components

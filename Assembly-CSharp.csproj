@@ -86,6 +86,7 @@
     <Compile Include="Assets/RosMessages/Std/msg/UInt32MultiArrayMsg.cs" />
     <Compile Include="Assets/RosMessages/Std/msg/MultiArrayDimensionMsg.cs" />
     <Compile Include="Assets/RosMessages/Std/msg/UInt64Msg.cs" />
+    <Compile Include="Assets/RosMessages/RLTrainnerPkg/msg/TransitionMsgMsg.cs" />
     <Compile Include="Assets/RosMessages/Std/msg/ByteMsg.cs" />
     <Compile Include="Assets/RosMessages/Std/msg/UInt64MultiArrayMsg.cs" />
     <Compile Include="Assets/RosMessages/Std/msg/Float32MultiArrayMsg.cs" />
@@ -102,6 +103,7 @@
     <Compile Include="Assets/RosMessages/Std/msg/UInt32Msg.cs" />
     <Compile Include="Assets/RosMessages/Std/msg/Int32MultiArrayMsg.cs" />
     <Compile Include="Assets/RosMessages/Std/msg/Int8MultiArrayMsg.cs" />
+    <Compile Include="Assets/Scripts/Ros_Unity/PublishTransition.cs" />
     <Compile Include="Assets/Scripts/RLAgent/AgentObserverBase.cs" />
     <Compile Include="Assets/RosMessages/Std/msg/Int16Msg.cs" />
   </ItemGroup>
