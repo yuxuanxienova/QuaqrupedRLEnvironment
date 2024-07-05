@@ -5,6 +5,7 @@ using UnityEngine;
 public abstract class AgentControllerBase : MonoBehaviour
 {
     public abstract void SetAction(List<float> action_list);
+    public abstract void Reset();
     public List<float> GetAction()
     {
         return action_list;

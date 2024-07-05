@@ -35,5 +35,17 @@ public class PendulumAgentController : AgentControllerBase
         action_list =_action_list;
     }
 
+    public override void Reset()
+    {
+        Debug.Log("[INFO][PendulumAgentController][Reset]Reset!!" );
+        articulationBody_joint_prismatic.jointPosition = new ArticulationReducedSpace(0f, 0f, 0f);
+        articulationBody_joint_prismatic.jointVelocity = new ArticulationReducedSpace(0f, 0f, 0f);
+        articulationBody_joint_prismatic.SetDriveTarget(ArticulationDriveAxis.X,0f);
+        articulationBody_joint_prismatic.SetDriveStiffness(ArticulationDriveAxis.X,0f);
 
+        articulationBody_joint_revolute.jointPosition = new ArticulationReducedSpace(0f, 0f, 0f);
+        articulationBody_joint_revolute.jointVelocity = new ArticulationReducedSpace(0f, 0f, 0f);
+        articulationBody_joint_revolute.SetDriveTarget(ArticulationDriveAxis.X,0f);
+        articulationBody_joint_revolute.SetDriveStiffness(ArticulationDriveAxis.X,0f);
+    }
 }

@@ -17,6 +17,10 @@ public class UIController : MonoBehaviour
     {
         
     }
+    public void ResetClicked()
+    {
+        agent.Reset();
+    }
     public void TestGetObservationCLicked()
     {
         string floatListToString = ExtensionMethods.FloatArrayToString(agent.GetObservation());

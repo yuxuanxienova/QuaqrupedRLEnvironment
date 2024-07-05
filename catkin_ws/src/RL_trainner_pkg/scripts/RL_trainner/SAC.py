@@ -236,8 +236,8 @@ class TrainableParameter:
 class Agent:
     def __init__(self):
         # Environment variables. You don't need to change this.
-        self.state_dim = 3  # [cos(theta), sin(theta), theta_dot]
-        self.action_dim = 1  # [torque] in[-1,1]
+        self.state_dim = 2  # [cos(theta), sin(theta), theta_dot]
+        self.action_dim = 2  # [torque] in[-1,1]
 
         self.batch_size = 200#200
         self.min_buffer_size = 1000

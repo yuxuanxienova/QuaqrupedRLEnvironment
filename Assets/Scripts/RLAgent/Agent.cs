@@ -20,6 +20,10 @@ public class Agent : MonoBehaviour
     {
 
     }
+    public void Reset()
+    {
+        agentController.Reset();
+    }
     public void SetAction(List<float> action_list)
     {
         agentController.SetAction(action_list);
