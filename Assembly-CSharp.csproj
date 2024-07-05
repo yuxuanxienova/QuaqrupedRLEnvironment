@@ -78,6 +78,7 @@
     <Compile Include="Assets/RosMessages/Std/msg/Int64MultiArrayMsg.cs" />
     <Compile Include="Assets/RosMessages/Std/msg/Float32Msg.cs" />
     <Compile Include="Assets/RosMessages/Std/msg/EmptyMsg.cs" />
+    <Compile Include="Assets/Scripts/RLAgent/PendulumAgent/PendulumResetController.cs" />
     <Compile Include="Assets/RosMessages/Std/msg/Float64Msg.cs" />
     <Compile Include="Assets/Scripts/Ros_Unity/PublishObservationList.cs" />
     <Compile Include="Assets/RosMessages/Std/msg/CharMsg.cs" />

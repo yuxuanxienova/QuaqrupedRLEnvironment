@@ -1148,6 +1148,7 @@ GameObject:
   - component: {fileID: 1075262944}
   - component: {fileID: 1075262946}
   - component: {fileID: 1075262947}
+  - component: {fileID: 1075262948}
   m_Layer: 0
   m_Name: PendulumAgent
   m_TagString: Untagged
@@ -1232,6 +1233,20 @@ MonoBehaviour:
   joint_prismatic_target_ub: 10
   joint_prismatic_target_lb: -10
   joint_revolute: {fileID: 483125549}
+--- !u!114 &1075262948
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1075262942}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 87dbcab8abe01cf22901f9ad0eda0535, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  resetInterval: 10
+  agent: {fileID: 1075262945}
 --- !u!1 &1108436736
 GameObject:
   m_ObjectHideFlags: 0
