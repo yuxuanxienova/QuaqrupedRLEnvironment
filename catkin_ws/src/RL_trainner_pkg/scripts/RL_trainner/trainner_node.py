@@ -51,7 +51,7 @@ class TrainnerNode:
     def updateNetwork(self,event):
         print("[INFO][updateNetwork]self.agent.memory.size={0}".format(self.agent.memory.size()))
         if(self.agent.memory.start_training()):
-            print("updateNetwork!")
+            # print("updateNetwork!")
             self.agent.updateNetwork()
 
         

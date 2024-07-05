@@ -9,6 +9,8 @@ public class Agent : MonoBehaviour
     public AgentControllerBase agentController;
     public AgentRewardCalculatorBase agentRewardCalculator;
 
+    private bool trancated_flag=false;
+
     void Start()
     {
 
@@ -22,7 +24,13 @@ public class Agent : MonoBehaviour
     }
     public void Reset()
     {
+
         agentController.Reset();
+        trancated_flag=true;
+    }
+    public void SetTrancatedFlag(bool flag)
+    {
+        trancated_flag=flag;
     }
     public void SetAction(List<float> action_list)
     {

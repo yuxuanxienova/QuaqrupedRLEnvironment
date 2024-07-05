@@ -15,6 +15,7 @@ public class PublishTransition : MonoBehaviour
     private float[] state_stored;
     private float[] action_stored;
     private float[] reward_stored;
+    private bool trancated_flag=false;
     void Start()
     {
         rosConnection = ROSConnection.GetOrCreateInstance();
@@ -45,11 +46,21 @@ public class PublishTransition : MonoBehaviour
                 action = action_tminus1,
                 reward = reward_tminus1,
                 next_state = state_t,
+                trancated_flag = trancated_flag,
                 layout = new RosMessageTypes.Std.MultiArrayLayoutMsg()
             };
 
             //Publish Message
-            rosConnection.Publish(topicName,message);
+            if(trancated_flag == false)
+            {
+                //Only publish the transition if it is not trancated
+                rosConnection.Publish(topicName,message);
+            }
+            else
+            {
+                trancated_flag=true;
+            }
+            
             timeElapsed = 0;
         }
         

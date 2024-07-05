@@ -18,6 +18,7 @@ namespace RosMessageTypes.RLTrainnerPkg
         public float[] state;
         public float[] action;
         public float[] reward;
+        public bool trancated_flag;
         public float[] next_state;
 
         public TransitionMsgMsg()
@@ -26,15 +27,17 @@ namespace RosMessageTypes.RLTrainnerPkg
             this.state = new float[0];
             this.action = new float[0];
             this.reward = new float[0];
+            this.trancated_flag = false;
             this.next_state = new float[0];
         }
 
-        public TransitionMsgMsg(Std.MultiArrayLayoutMsg layout, float[] state, float[] action, float[] reward, float[] next_state)
+        public TransitionMsgMsg(Std.MultiArrayLayoutMsg layout, float[] state, float[] action, float[] reward, bool trancated_flag, float[] next_state)
         {
             this.layout = layout;
             this.state = state;
             this.action = action;
             this.reward = reward;
+            this.trancated_flag = trancated_flag;
             this.next_state = next_state;
         }
 
@@ -46,6 +49,7 @@ namespace RosMessageTypes.RLTrainnerPkg
             deserializer.Read(out this.state, sizeof(float), deserializer.ReadLength());
             deserializer.Read(out this.action, sizeof(float), deserializer.ReadLength());
             deserializer.Read(out this.reward, sizeof(float), deserializer.ReadLength());
+            deserializer.Read(out this.trancated_flag);
             deserializer.Read(out this.next_state, sizeof(float), deserializer.ReadLength());
         }
 
@@ -58,6 +62,7 @@ namespace RosMessageTypes.RLTrainnerPkg
             serializer.Write(this.action);
             serializer.WriteLength(this.reward);
             serializer.Write(this.reward);
+            serializer.Write(this.trancated_flag);
             serializer.WriteLength(this.next_state);
             serializer.Write(this.next_state);
         }
@@ -69,6 +74,7 @@ namespace RosMessageTypes.RLTrainnerPkg
             "\nstate: " + System.String.Join(", ", state.ToList()) +
             "\naction: " + System.String.Join(", ", action.ToList()) +
             "\nreward: " + System.String.Join(", ", reward.ToList()) +
+            "\ntrancated_flag: " + trancated_flag.ToString() +
             "\nnext_state: " + System.String.Join(", ", next_state.ToList());
         }
 
