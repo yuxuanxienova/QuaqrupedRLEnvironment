@@ -174,9 +174,6 @@ class Critic:
         
 
     def setup_critic(self):
-        # TODO: Implement this function which sets up the critic(s). Take a look at the NeuralNetwork 
-        # class in utils.py. Note that you can have MULTIPLE critic networks in this class.
-        
         # #-------1. Set up the V network-------
         # #dim(state_dim) -> dim(1)
         # activation_V = None
@@ -271,8 +268,6 @@ class SAC_Agent:
         self.setup_agent()
 
     def setup_agent(self):
-        # TODO: Setup off-policy agent with policy and critic classes. 
-        # Feel free to instantiate any other parameters you feel you might need.
         self.actor = Actor(hidden_size=self.hidden_dim, hidden_layers=1, actor_lr=self.actor_lr, action_bound=self.action_bound,state_dim=self.state_dim, action_dim=self.action_dim,device=self.device)         
         self.critic = Critic(hidden_size=self.hidden_dim, hidden_layers=1,critic_lr=self.critic_lr, action_bound=self.action_bound,state_dim=self.state_dim,action_dim=self.action_dim,device=self.device)
 

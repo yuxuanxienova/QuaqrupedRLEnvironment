@@ -12,7 +12,10 @@ add_message_files(
   FILES
   TransitionMsg.msg
 )
-
+add_service_files(
+  FILES
+  ProcessArray.srv
+)
 generate_messages(
   DEPENDENCIES
   std_msgs

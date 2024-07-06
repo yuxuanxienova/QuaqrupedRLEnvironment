@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using System.Threading.Tasks;
 public class UIController : MonoBehaviour
 {
     public Agent agent;
@@ -37,5 +37,11 @@ public class UIController : MonoBehaviour
     {
         string floatListToString = ExtensionMethods.FloatArrayToString(agent.GetAction());
         Debug.Log("[INFO][UIController][TestGetActionClicked]ActionList:"+floatListToString);
+    }
+
+    public async void TestSampleActionAsyncClicked()
+    {
+        float[] action_arr = await agent.SampleActionAsync(agent.GetObservation());
+        Debug.Log("[INFO][UIController][TestSampleActionAsyncClicked]action_arr:"+ExtensionMethods.FloatArrayToString(action_arr));
     }
 }

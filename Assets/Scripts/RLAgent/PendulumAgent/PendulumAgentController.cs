@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class PendulumAgentController : AgentControllerBase
 {
+    public int action_dim = 2;
     public Transform joint_prismatic;
     public float joint_prismatic_stiffness_ub=200;
     public float joint_prismatic_stiffness_lb=30;
@@ -16,20 +17,32 @@ public class PendulumAgentController : AgentControllerBase
     private ArticulationBody articulationBody_joint_prismatic;
     private ArticulationBody articulationBody_joint_revolute;
 
+
+
     void Start()
     {
         articulationBody_joint_prismatic = joint_prismatic.GetComponent<ArticulationBody>();
         articulationBody_joint_revolute = joint_revolute.GetComponent<ArticulationBody>();
-        SetAction(new List<float>{0,0,0,0});
+        initializeAction();
     }
 
 
     // Update is called once per frame
     void Update()
     {
-        
     }
 
+
+    private void initializeAction()
+    {
+        // Initialize actionList with zeros
+        List<float> floatsList = new List<float>(action_dim);
+        for (int i = 0; i < action_dim; i++)
+        {
+            floatsList.Add(0.0f);
+        }
+        SetAction(floatsList);
+    }
     public override void SetAction(List<float> _action_list)
     {
         //Each action in action list range from -1 to 1, need to convert to right scale
@@ -42,6 +55,7 @@ public class PendulumAgentController : AgentControllerBase
         //Store the action list
         action_list =_action_list;
     }
+    
 
     public override void Reset()
     {
@@ -56,4 +70,6 @@ public class PendulumAgentController : AgentControllerBase
         articulationBody_joint_revolute.SetDriveTarget(ArticulationDriveAxis.X,0f);
         articulationBody_joint_revolute.SetDriveStiffness(ArticulationDriveAxis.X,0f);
     }
+
+
 }

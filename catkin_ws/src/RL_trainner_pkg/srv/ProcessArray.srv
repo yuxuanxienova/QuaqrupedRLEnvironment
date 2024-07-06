@@ -1,0 +1,4 @@
+# ProcessArray.srv
+std_msgs/Float32MultiArray input
+---
+std_msgs/Float32MultiArray output

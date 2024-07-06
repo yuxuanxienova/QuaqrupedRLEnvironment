@@ -65,6 +65,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets/Scripts/Utilities/ExtensionMethods.cs" />
+    <Compile Include="Assets/Scripts/Ros_Unity/ServiceClientSampleAction.cs" />
+    <Compile Include="Assets/RosMessages/RLTrainnerPkg/srv/ProcessArrayResponse.cs" />
     <Compile Include="Assets/Scripts/RLAgent/Agent.cs" />
     <Compile Include="Assets/RosMessages/Std/msg/BoolMsg.cs" />
     <Compile Include="Assets/RosMessages/Std/msg/StringMsg.cs" />
@@ -93,6 +95,7 @@
     <Compile Include="Assets/RosMessages/Std/msg/ByteMsg.cs" />
     <Compile Include="Assets/RosMessages/Std/msg/UInt64MultiArrayMsg.cs" />
     <Compile Include="Assets/RosMessages/Std/msg/Float32MultiArrayMsg.cs" />
+    <Compile Include="Assets/RosMessages/RLTrainnerPkg/srv/ProcessArrayRequest.cs" />
     <Compile Include="Assets/Scripts/RLAgent/PendulumAgent/PendulumAgentObserver.cs" />
     <Compile Include="Assets/RosMessages/Std/msg/ColorRGBAMsg.cs" />
     <Compile Include="Assets/RosMessages/Std/msg/MultiArrayLayoutMsg.cs" />

@@ -8,52 +8,63 @@ import PIL
 from std_msgs.msg import String
 from std_msgs.msg import Float32MultiArray
 from RL_trainner_pkg.msg import TransitionMsg
+from RL_trainner_pkg.srv import ProcessArray, ProcessArrayResponse
 from SAC import SAC_Agent
+import concurrent.futures
 class TrainnerNode:
     def __init__(self) -> None:
         #Parameters
-        self.state_dim = 2
+        self.state_dim = 4
         self.action_dim = 2
         # initialize components
         self.publishersDict = {}
         self.subscriberDict = {}
+        self.serviceDict = {}
         self.callbackFuncToTopicName = {}
-        #Storage Field
-        self.cur_state:np.ndarray=None
-        
+        self.handleFuncToServiceName = {}
+        self.threadPoolExecutor = concurrent.futures.ThreadPoolExecutor(max_workers=20)
+        #Storage Field        
         self.agent = SAC_Agent(self.state_dim,self.action_dim)
+        self.num_update=0
+        self.timePassed=0
     def run_node(self):
         #1.Register Function Runner
-        self.run_function(self.updateAction,interval=0.5)
-        self.run_function(self.updateNetwork,interval=0.1)
+        # self.run_function(self.updateAction,interval=0.1)
+        self.run_function(self.updateNetwork,interval=0.01)
+        self.run_function(self.updateInfo,interval=1)
         #2. Register Publishers
         self.register_event_publisher(topic_name="/trainner_node/event/set_action",data_class=Float32MultiArray,queue_size=30)
         #3.Register Subscribers
         self.register_subscriber(topic_name="/unity/RL_Agent/transition",data_class=TransitionMsg,callback=self.onCall_subscribe_transition)
+        #4. Register Service Server
+        self.register_service_server(service_name="/trainner_node/service/sample_action",service_class=ProcessArray,handle_func=self.onCall_handleService_sampleAction)
         
 
     #----------------------------------FunctionRunner---------------------------
     def run_function(self, func, interval: float):
         rospy.Timer(rospy.Duration(interval), func)
-    def updateAction(self,event):
-        if(self.cur_state is not None):
-            action_publisher = self.publishersDict["/trainner_node/event/set_action"]
-            action = self.agent.get_action(self.cur_state,train=True)
-            # Create a Float32MultiArray message
-            action_msg = Float32MultiArray()
+    # def updateAction(self,event):
+    #     if(self.cur_state is not None):
+    #         action_publisher = self.publishersDict["/trainner_node/event/set_action"]
+    #         action = self.agent.get_action(self.cur_state,train=True)
+    #         # Create a Float32MultiArray message
+    #         action_msg = Float32MultiArray()
             
-            # Populate the data field with the action values
-            action_msg.data = action.tolist()  # Ensure action is converted to a list if it's a numpy array
+    #         # Populate the data field with the action values
+    #         action_msg.data = action.tolist()  # Ensure action is converted to a list if it's a numpy array
             
-            # Publish the message
-            action_publisher.publish(action_msg)
-
+    #         # Publish the message
+    #         action_publisher.publish(action_msg)
+            
     def updateNetwork(self,event):
-        print("[INFO][updateNetwork]self.agent.memory.size={0}".format(self.agent.memory.size()))
         if(self.agent.memory.start_training()):
-            print("updateNetwork!")
+            self.num_update += 1
             self.agent.updateNetwork()
-
+    def updateInfo(self,event):
+        self.timePassed+=1
+        print("[INFO][updateInfo]timePassed={0}".format(self.timePassed))
+        print("[INFO][updateInfo]self.agent.memory.size={0}".format(self.agent.memory.size()))
+        print("[INFO][updateInfo]num_NetowrkUpdate:{0}".format(self.num_update))
         
     # ------------------------------------Publishers-----------------------------
     def register_event_publisher(self, topic_name: str, data_class, queue_size=10):
@@ -96,10 +107,33 @@ class TrainnerNode:
         action = np.array(msg.action)
         reward = np.array(msg.reward)
         next_state = np.array(msg.next_state)
-
+        trancated_flag = msg.trancated_flag
         transition = (state,action,reward,next_state)
-        self.agent.memory.put(transition)
-        self.cur_state = state
+        if(trancated_flag==False):
+            self.agent.memory.put(transition)
+
+    # -------------------------------------Service----------------------------------------------------------
+    def register_service_server(self,service_name:str,service_class,handle_func):
+        service = rospy.Service(service_name, service_class, handle_func)
+    def onCall_handleService_sampleAction(self,req):
+        # print("[INFO][onCall_handleService_sampleAction]Incomming request")
+        # Submit the request to be handled asynchronously
+        future = self.threadPoolExecutor.submit(self._thread_processRequest_sampleAction, req)
+        # Wait for the future to complete and obtain the response
+        response_data = future.result()
+        response = ProcessArrayResponse()
+        response.output = Float32MultiArray(data=response_data.data)
+        return response
+    def _thread_processRequest_sampleAction(self,req):
+        state = np.array(req.input.data)
+        action = self.agent.get_action(state,train=True)
+        response = Float32MultiArray(data=action.tolist())
+        return response
+
+
+
+
+
 if __name__ == "__main__":
     # -----------------------Main-------------------
     rospy.init_node(name="trainner_node", anonymous=True, log_level=rospy.INFO)
