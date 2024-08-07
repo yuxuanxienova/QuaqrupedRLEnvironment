@@ -153,6 +153,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b5922fa22147a0890bb233b03859faa3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Observation_dim: 8
   ball: {fileID: 1482547759}
 --- !u!114 &147848583
 MonoBehaviour:

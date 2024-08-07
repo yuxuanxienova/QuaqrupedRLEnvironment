@@ -30,7 +30,6 @@ class TrainnerNode:
         self.timePassed=0
     def run_node(self):
         #1.Register Function Runner
-        # self.run_function(self.updateAction,interval=0.1)
         self.run_function(self.updateNetwork,interval=0.1)
         self.run_function(self.updateInfo,interval=1)
         #2. Register Publishers
@@ -39,24 +38,10 @@ class TrainnerNode:
         self.register_subscriber(topic_name="/unity/RL_Agent/transition",data_class=TransitionMsg,callback=self.onCall_subscribe_transition)
         #4. Register Service Server
         self.register_service_server(service_name="/trainner_node/service/sample_action",service_class=ProcessArray,handle_func=self.onCall_handleService_sampleAction)
-        
-
     #----------------------------------FunctionRunner---------------------------
     def run_function(self, func, interval: float):
         rospy.Timer(rospy.Duration(interval), func)
-    # def updateAction(self,event):
-    #     if(self.cur_state is not None):
-    #         action_publisher = self.publishersDict["/trainner_node/event/set_action"]
-    #         action = self.agent.get_action(self.cur_state,train=True)
-    #         # Create a Float32MultiArray message
-    #         action_msg = Float32MultiArray()
-            
-    #         # Populate the data field with the action values
-    #         action_msg.data = action.tolist()  # Ensure action is converted to a list if it's a numpy array
-            
-    #         # Publish the message
-    #         action_publisher.publish(action_msg)
-            
+
     def updateNetwork(self,event):
         if(self.timePassed < self.trainTime):
             if(self.agent.memory.start_training()):
@@ -134,10 +119,6 @@ class TrainnerNode:
             action = self.agent.get_action(state,train=False)
         response = Float32MultiArray(data=action.tolist())
         return response
-
-
-
-
 
 if __name__ == "__main__":
     # -----------------------Main-------------------

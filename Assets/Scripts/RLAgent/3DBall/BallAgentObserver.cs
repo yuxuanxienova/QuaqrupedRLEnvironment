@@ -6,6 +6,7 @@ public class BallAgentObserver : AgentObserverBase
 {
     public GameObject ball;
     private Rigidbody m_BallRb;
+
     public override List<float> GetObservations()
     {
         ClearObservationList();
@@ -13,6 +14,7 @@ public class BallAgentObserver : AgentObserverBase
         AddToObservationList(gameObject.transform.rotation.x,name:"[gameObject.transform.rotation.x]");
         AddToObservationList(ball.transform.position - gameObject.transform.position,name:"[ball.transform.position - gameObject.transform.position]");
         AddToObservationList(m_BallRb.velocity,name:"[m_BallRb.velocity]");
+
         return observation_list;
     }
 

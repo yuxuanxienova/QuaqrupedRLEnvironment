@@ -83,9 +83,6 @@ class Actor:
         '''
         This function sets up the actor network in the Actor class.
         '''
-        # TODO: Implement this function which sets up the actor network. 
-        # Take a look at the NeuralNetwork class in utils.py. 
-        
         #Step 1. creat two net that map state input to mean and std of f 
         # input dim(state_dim) output dim(num_action)
         activation_f_mu = None
@@ -120,9 +117,6 @@ class Actor:
         assert state.shape == (self.state_dim,) or state.shape[1] == self.state_dim, 'State passed to this method has a wrong shape'
         
         action , log_prob = torch.zeros(state.shape[0]), torch.ones(state.shape[0])
-        # TODO: Implement this function which returns an action and its log probability.
-        # If working with stochastic policies, make sure that its log_std are clamped 
-        # using the clamp_log_std function.
         
         #---------------------------------------------------------
         mu = self.actor_f_mu_net(state)
@@ -175,17 +169,6 @@ class Critic:
         
 
     def setup_critic(self):
-        # #-------1. Set up the V network-------
-        # #dim(state_dim) -> dim(1)
-        # activation_V = None
-        # self.critic_V_net = NeuralNetwork(input_dim=self.state_dim, output_dim=1, hidden_size=self.hidden_size, hidden_layers=self.hidden_layers,activation=activation_V).to(self.device)
-        
-        # #--------2. Set up the V target network
-        # activation_V_target = None
-        # self.critic_V_target_net = NeuralNetwork(input_dim=self.state_dim, output_dim=1, hidden_size=self.hidden_size, hidden_layers=self.hidden_layers,activation=activation_V_target).to(self.device)
-        
-        # #set the initial parameter of the target V net the same as the V net\
-        # self.critic_V_target_net.load_state_dict(self.critic_V_net.state_dict())
         
         #--------1. Set up the Q network--------
         #dim(state_dim + action_dim) -> dim(1)

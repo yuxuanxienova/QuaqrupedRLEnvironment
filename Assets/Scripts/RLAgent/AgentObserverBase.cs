@@ -5,8 +5,16 @@ public abstract class AgentObserverBase : MonoBehaviour
 {
     public abstract List<float> GetObservations();
     protected List<float> observation_list;
+    public int Observation_dim;
 
     //Utilities
+    public void CheckObservationListDim()
+    {
+        if (observation_list.Count != Observation_dim)
+        {
+            Debug.LogError("[ERROR][AgentObserver][CheckObservationListDim]observation_list.Count=" + observation_list.Count + " is not equal to Observation_dim=" + Observation_dim);
+        }
+    }
     public void ClearObservationList()
     {
         observation_list = new List<float>();

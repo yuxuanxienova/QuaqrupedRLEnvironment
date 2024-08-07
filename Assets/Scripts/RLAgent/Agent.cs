@@ -14,11 +14,6 @@ public class Agent : MonoBehaviour
 
     private bool trancated_flag=false;
 
-    // private float EpisodicReturn = 0;
-
-    // private float timeElapsed_rewardCalculation = 0;
-    // public float rewardCalculationInterval = 0.01f ;
-
     private float timeElapsed_actionUpdate = 0;
     public float actionUpdateInterval = 0.2f;
 
@@ -39,7 +34,6 @@ public class Agent : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // UpdateEpisodicReturn();
         UpdateAction();
         UpdateTransitionPublish();
 
@@ -48,8 +42,6 @@ public class Agent : MonoBehaviour
     {
         episodeCount += 1;
         agentController.Reset();
-        // Debug.Log("[INFO][Agent]" + "Episode="+ episodeCount + "EpisodicReturn="+EpisodicReturn);
-        // ResetEpisodicReturn();
         trancated_flag=true;
     }
     private void UpdateAction()
@@ -139,6 +131,7 @@ public class Agent : MonoBehaviour
     public float[] GetObservation()
     {
         List<float> observation_list = agentObserver.GetObservations();
+        agentObserver.CheckObservationListDim();
         if(observation_list != null)
         {
             return observation_list.ToArray();
@@ -160,18 +153,4 @@ public class Agent : MonoBehaviour
             return new float[0];
         }
     }
-
-    // public void UpdateEpisodicReturn()
-    // {
-    //     timeElapsed_rewardCalculation += Time.deltaTime;
-    //     if(timeElapsed_rewardCalculation > rewardCalculationInterval)
-    //     {
-    //         EpisodicReturn += CalculateReward()[0];
-    //         timeElapsed_rewardCalculation=0;
-    //     }
-    // }
-    // public void ResetEpisodicReturn()
-    // {
-    //     EpisodicReturn = 0;
-    // }
 }
