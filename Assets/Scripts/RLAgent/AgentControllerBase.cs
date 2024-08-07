@@ -4,7 +4,12 @@ using UnityEngine;
 
 public abstract class AgentControllerBase : MonoBehaviour
 {
-    public abstract void SetAction(List<float> action_list);
+    public void SetAction(List<float> _action_list)
+    {
+        action_list =_action_list;
+
+    }
+    public abstract void ExecuteAction();
     public abstract void Reset();
     public List<float> GetAction()
     {
@@ -12,6 +17,16 @@ public abstract class AgentControllerBase : MonoBehaviour
     }
 
     protected List<float> action_list;
+    protected void initializeAction(int action_dim)
+    {
+        // Initialize actionList with zeros
+        List<float> floatsList = new List<float>(action_dim);
+        for (int i = 0; i < action_dim; i++)
+        {
+            floatsList.Add(0.0f);
+        }
+        SetAction(floatsList);
+    }
 
     public static float MapValue(float value, float fromLow, float fromHigh, float toLow, float toHigh)
     {

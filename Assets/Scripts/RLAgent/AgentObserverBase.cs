@@ -7,6 +7,10 @@ public abstract class AgentObserverBase : MonoBehaviour
     protected List<float> observation_list;
 
     //Utilities
+    public void ClearObservationList()
+    {
+        observation_list = new List<float>();
+    }
     void AddFloatObs(float obs, string name)
     {
         if (float.IsNaN(obs))

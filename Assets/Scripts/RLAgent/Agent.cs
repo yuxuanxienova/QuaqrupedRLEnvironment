@@ -14,10 +14,10 @@ public class Agent : MonoBehaviour
 
     private bool trancated_flag=false;
 
-    private float EpisodicReturn = 0;
+    // private float EpisodicReturn = 0;
 
-    private float timeElapsed_rewardCalculation = 0;
-    public float rewardCalculationInterval = 0.01f ;
+    // private float timeElapsed_rewardCalculation = 0;
+    // public float rewardCalculationInterval = 0.01f ;
 
     private float timeElapsed_actionUpdate = 0;
     public float actionUpdateInterval = 0.2f;
@@ -27,7 +27,8 @@ public class Agent : MonoBehaviour
 
     private float[] state_stored;
     private float[] action_stored;
-    private float[] reward_stored;
+
+    private int episodeCount = 0;
 
     void Start()
     {
@@ -38,17 +39,17 @@ public class Agent : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        UpdateEpisodicReturn();
+        // UpdateEpisodicReturn();
         UpdateAction();
         UpdateTransitionPublish();
 
     }
     public void Reset()
     {
-
+        episodeCount += 1;
         agentController.Reset();
-        Debug.Log("[INFO][Agent]EpisodicReturn="+EpisodicReturn);
-        ResetEpisodicReturn();
+        // Debug.Log("[INFO][Agent]" + "Episode="+ episodeCount + "EpisodicReturn="+EpisodicReturn);
+        // ResetEpisodicReturn();
         trancated_flag=true;
     }
     private void UpdateAction()
@@ -80,7 +81,7 @@ public class Agent : MonoBehaviour
         {
             float[] result = task.Result;
             List<float> floatList = new List<float>(result);
-            SetAction(floatList);
+            SetExecuteAction(floatList);
         }
 
     } 
@@ -91,12 +92,11 @@ public class Agent : MonoBehaviour
         {
             float[] state_tminus1 = state_stored;
             float[] action_tminus1 = action_stored;
-            float[] reward_tminus1 = reward_stored;
+            float[] reward_tminus1 = CalculateReward();
             float[] state_t = GetObservation();
 
             state_stored = GetObservation();
             action_stored = GetAction();
-            reward_stored = CalculateReward();
 
             publishTransition.CallPublishTransition(state_tminus1,action_tminus1,reward_tminus1,state_t,trancated_flag);
             trancated_flag=false;
@@ -108,9 +108,14 @@ public class Agent : MonoBehaviour
     {
         trancated_flag=flag;
     }
-    public void SetAction(List<float> action_list)
+    public bool GetTrancaredFlag()
+    {
+        return trancated_flag;
+    }
+    public void SetExecuteAction(List<float> action_list)
     {
         agentController.SetAction(action_list);
+        agentController.ExecuteAction();
     }
     public async Task<float[]> SampleActionAsync(float[] obs_arr)
     {
@@ -145,7 +150,7 @@ public class Agent : MonoBehaviour
     }
     public float[] CalculateReward()
     {
-        List<float> reward_list = agentRewardCalculator.GetReward();
+        List<float> reward_list = agentRewardCalculator.CalculateReward();
         if(reward_list != null)
         {
             return reward_list.ToArray();
@@ -156,17 +161,17 @@ public class Agent : MonoBehaviour
         }
     }
 
-    public void UpdateEpisodicReturn()
-    {
-        timeElapsed_rewardCalculation += Time.deltaTime;
-        if(timeElapsed_rewardCalculation > rewardCalculationInterval)
-        {
-            EpisodicReturn += CalculateReward()[0];
-            timeElapsed_rewardCalculation=0;
-        }
-    }
-    public void ResetEpisodicReturn()
-    {
-        EpisodicReturn = 0;
-    }
+    // public void UpdateEpisodicReturn()
+    // {
+    //     timeElapsed_rewardCalculation += Time.deltaTime;
+    //     if(timeElapsed_rewardCalculation > rewardCalculationInterval)
+    //     {
+    //         EpisodicReturn += CalculateReward()[0];
+    //         timeElapsed_rewardCalculation=0;
+    //     }
+    // }
+    // public void ResetEpisodicReturn()
+    // {
+    //     EpisodicReturn = 0;
+    // }
 }

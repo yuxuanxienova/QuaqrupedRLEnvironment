@@ -28,7 +28,7 @@ public class SubscribeAction : MonoBehaviour
         }
         
         // Pass the extracted float data to agent.SetAction()
-        agent.SetAction(floatList);
+        agent.SetExecuteAction(floatList);
 
     }
 }

@@ -68,9 +68,11 @@
     <Compile Include="Assets/Scripts/Ros_Unity/ServiceClientSampleAction.cs" />
     <Compile Include="Assets/RosMessages/RLTrainnerPkg/srv/ProcessArrayResponse.cs" />
     <Compile Include="Assets/Scripts/RLAgent/Agent.cs" />
+    <Compile Include="Assets/Scripts/RLAgent/3DBall/BallAgentObserver.cs" />
     <Compile Include="Assets/RosMessages/Std/msg/BoolMsg.cs" />
     <Compile Include="Assets/RosMessages/Std/msg/StringMsg.cs" />
     <Compile Include="Assets/RosMessages/Std/msg/Int8Msg.cs" />
+    <Compile Include="Assets/Scripts/RLAgent/3DBall/BallResetController.cs" />
     <Compile Include="Assets/RosMessages/Std/msg/Int32Msg.cs" />
     <Compile Include="Assets/Scripts/RLAgent/AgentControllerBase.cs" />
     <Compile Include="Assets/RosMessages/Std/msg/UInt16MultiArrayMsg.cs" />
@@ -94,10 +96,12 @@
     <Compile Include="Assets/RosMessages/RLTrainnerPkg/msg/TransitionMsgMsg.cs" />
     <Compile Include="Assets/RosMessages/Std/msg/ByteMsg.cs" />
     <Compile Include="Assets/RosMessages/Std/msg/UInt64MultiArrayMsg.cs" />
-    <Compile Include="Assets/RosMessages/Std/msg/Float32MultiArrayMsg.cs" />
     <Compile Include="Assets/RosMessages/RLTrainnerPkg/srv/ProcessArrayRequest.cs" />
+    <Compile Include="Assets/RosMessages/Std/msg/Float32MultiArrayMsg.cs" />
     <Compile Include="Assets/Scripts/RLAgent/PendulumAgent/PendulumAgentObserver.cs" />
+    <Compile Include="Assets/Scripts/RLAgent/3DBall/BallAgentController.cs" />
     <Compile Include="Assets/RosMessages/Std/msg/ColorRGBAMsg.cs" />
+    <Compile Include="Assets/Scripts/RLAgent/3DBall/BallAgentRewardCalculator.cs" />
     <Compile Include="Assets/RosMessages/Std/msg/MultiArrayLayoutMsg.cs" />
     <Compile Include="Assets/RosMessages/Std/msg/UInt8MultiArrayMsg.cs" />
     <Compile Include="Assets/Scripts/RLAgent/QuadrupedAgent/QuadrupedAgentObserver.cs" />
@@ -129,11 +133,14 @@
     <None Include="Assets/TextMesh Pro/Shaders/TMPro_Properties.cginc" />
     <None Include="Assets/TextMesh Pro/Shaders/TMPro_Surface.cginc" />
     <None Include="Assets/TextMesh Pro/Resources/LineBreaking Following Characters.txt" />
+    <None Include="Assets/Materials/GridPatternShader.shader" />
     <None Include="Assets/anymal_c_urdf/anymal_c_simple_description/package.xml" />
     <None Include="Assets/TextMesh Pro/Shaders/TMP_SDF-Mobile Masking.shader" />
+    <None Include="Assets/Materials/ShaderOutline.shader" />
     <None Include="Assets/TextMesh Pro/Shaders/TMP_SDF Overlay.shader" />
     <None Include="Assets/TextMesh Pro/Shaders/TMP_Bitmap-Mobile.shader" />
     <None Include="Assets/TextMesh Pro/Fonts/LiberationSans - OFL.txt" />
+    <None Include="Assets/Materials/ShaderRadialGrid.shader" />
     <None Include="Assets/TextMesh Pro/Shaders/TMP_SDF-Mobile.shader" />
     <None Include="Assets/TextMesh Pro/Shaders/TMP_Sprite.shader" />
   </ItemGroup>

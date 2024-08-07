@@ -22,7 +22,7 @@ public class PendulumAgentRewardCalculator : AgentRewardCalculatorBase
     {
         
     }
-    public override List<float> GetReward()
+    public override List<float> CalculateReward()
     {
         float sr_error_revoluteJoint = Mathf.Sqrt(Mathf.Pow(articulationBody_joint_revolute.jointPosition[0] - revolute_joint_reference,2));
         float reward_revoluteJoint = 1/(1 + sr_error_revoluteJoint);

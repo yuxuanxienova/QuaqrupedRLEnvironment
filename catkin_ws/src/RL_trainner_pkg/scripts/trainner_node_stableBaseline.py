@@ -1,4 +1,8 @@
-
+import numpy as np
+import rospy
+from stable_baselines3 import SAC
+from stable_baselines3.common.vec_env.dummy_vec_env import DummyVecEnv
+from stable_baselines3.common.monitor import Monitor
 import sys
 import os
 import rospy
@@ -9,59 +13,67 @@ from std_msgs.msg import String
 from std_msgs.msg import Float32MultiArray
 from RL_trainner_pkg.msg import TransitionMsg
 from RL_trainner_pkg.srv import ProcessArray, ProcessArrayResponse
-from SAC import SAC_Agent
+import gymnasium as gym
+from gym import spaces
 import concurrent.futures
+# Define a custom Gym environment
+class CustomEnv(gym.Env):
+    def __init__(self):
+        super(CustomEnv, self).__init__()
+        self.observation_space = spaces.Box(low=-1.0, high=1.0, shape=(4,), dtype=np.float32)
+        self.action_space = spaces.Box(low=-1.0, high=1.0, shape=(2,), dtype=np.float32)
+        self.state = np.zeros(4)
+
+    def reset(self):
+        self.state = np.random.uniform(low=-1.0, high=1.0, size=(4,))
+        return self.state
+
+    def step(self, action):
+        self.state = self.state + action  # Simplified dynamics
+        reward = -np.sum(np.square(self.state))  # Reward function
+        done = np.linalg.norm(self.state) > 2  # Episode ends if state is too large
+        return self.state, reward, done, {}
+
+    def render(self, mode='human'):
+        pass
+
+    def close(self):
+        pass
+
 class TrainnerNode:
-    def __init__(self) -> None:
-        #Parameters
-        self.state_dim = 8
+    def __init__(self):
+        self.state_dim = 4
         self.action_dim = 2
-        self.trainTime=1000
-        # initialize components
+        self.trainTime = 10000
+        self.timePassed = 0
+
+        # Initialize components
         self.publishersDict = {}
         self.subscriberDict = {}
         self.serviceDict = {}
         self.callbackFuncToTopicName = {}
         self.handleFuncToServiceName = {}
         self.threadPoolExecutor = concurrent.futures.ThreadPoolExecutor(max_workers=20)
-        #Storage Field        
-        self.agent = SAC_Agent(self.state_dim,self.action_dim)
-        self.num_update=0
-        self.timePassed=0
-    def run_node(self):
-        #1.Register Function Runner
-        # self.run_function(self.updateAction,interval=0.1)
-        self.run_function(self.updateNetwork,interval=0.1)
-        self.run_function(self.updateInfo,interval=1)
-        #2. Register Publishers
-        self.register_event_publisher(topic_name="/trainner_node/event/set_action",data_class=Float32MultiArray,queue_size=30)
-        #3.Register Subscribers
-        self.register_subscriber(topic_name="/unity/RL_Agent/transition",data_class=TransitionMsg,callback=self.onCall_subscribe_transition)
-        #4. Register Service Server
-        self.register_service_server(service_name="/trainner_node/service/sample_action",service_class=ProcessArray,handle_func=self.onCall_handleService_sampleAction)
-        
 
-    #----------------------------------FunctionRunner---------------------------
+        # Initialize environment and agent
+        self.env = DummyVecEnv([lambda: Monitor(CustomEnv())])
+        self.agent = SAC('MlpPolicy', self.env, verbose=1)
+
+    def run_node(self):
+        self.run_function(self.updateNetwork, interval=0.2)
+        self.run_function(self.updateInfo, interval=1)
+
+        self.register_event_publisher(topic_name="/trainner_node/event/set_action", data_class=Float32MultiArray, queue_size=30)
+        self.register_subscriber(topic_name="/unity/RL_Agent/transition", data_class=TransitionMsg, callback=self.onCall_subscribe_transition)
+        self.register_service_server(service_name="/trainner_node/service/sample_action", service_class=ProcessArray, handle_func=self.onCall_handleService_sampleAction)
+
     def run_function(self, func, interval: float):
         rospy.Timer(rospy.Duration(interval), func)
-    # def updateAction(self,event):
-    #     if(self.cur_state is not None):
-    #         action_publisher = self.publishersDict["/trainner_node/event/set_action"]
-    #         action = self.agent.get_action(self.cur_state,train=True)
-    #         # Create a Float32MultiArray message
-    #         action_msg = Float32MultiArray()
-            
-    #         # Populate the data field with the action values
-    #         action_msg.data = action.tolist()  # Ensure action is converted to a list if it's a numpy array
-            
-    #         # Publish the message
-    #         action_publisher.publish(action_msg)
-            
-    def updateNetwork(self,event):
-        if(self.timePassed < self.trainTime):
-            if(self.agent.memory.start_training()):
-                self.num_update += 1
-                self.agent.updateNetwork()
+
+    def updateNetwork(self, event):
+        if self.timePassed < self.trainTime:
+            self.agent.learn(total_timesteps=1)
+            self.timePassed += 1
     def updateInfo(self,event):
         self.timePassed+=1
         print("[INFO][updateInfo]timePassed={0}".format(self.timePassed))
@@ -111,29 +123,30 @@ class TrainnerNode:
         next_state = np.array(msg.next_state)
         trancated_flag = msg.trancated_flag
         transition = (state,action,reward,next_state)
-        # if(trancated_flag==False):
-        self.agent.memory.put(transition)
+        if(trancated_flag==False):
+            self.agent.replay_buffer.add(state, action, reward, next_state, trancated_flag)
 
     # -------------------------------------Service----------------------------------------------------------
     def register_service_server(self,service_name:str,service_class,handle_func):
         service = rospy.Service(service_name, service_class, handle_func)
-    def onCall_handleService_sampleAction(self,req):
-        # print("[INFO][onCall_handleService_sampleAction]Incomming request")
-        # Submit the request to be handled asynchronously
+    def onCall_handleService_sampleAction(self, req):
         future = self.threadPoolExecutor.submit(self._thread_processRequest_sampleAction, req)
-        # Wait for the future to complete and obtain the response
         response_data = future.result()
         response = ProcessArrayResponse()
         response.output = Float32MultiArray(data=response_data.data)
         return response
-    def _thread_processRequest_sampleAction(self,req):
+
+    def _thread_processRequest_sampleAction(self, req):
         state = np.array(req.input.data)
-        if(self.timePassed < self.trainTime):
-            action = self.agent.get_action(state,train=True)
+        if self.timePassed < self.trainTime:
+            action, _states = self.agent.predict(state, deterministic=False)
         else:
-            action = self.agent.get_action(state,train=False)
+            action, _states = self.agent.predict(state, deterministic=True)
         response = Float32MultiArray(data=action.tolist())
         return response
+    def train_agent(self):
+        self.agent.learn(total_timesteps=self.trainTime)
+
 
 
 

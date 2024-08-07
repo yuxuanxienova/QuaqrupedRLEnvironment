@@ -22,10 +22,9 @@ public class PendulumAgentObserver : AgentObserverBase
 
     public override List<float> GetObservations()
     {
-        observation_list = new List<float>();
+        ClearObservationList();
         AddToObservationList(articulationBody_joint_prismatic.jointPosition[0],name:"[articulationBody_joint_prismatic.jointPosition[0]]");
         AddToObservationList(articulationBody_joint_prismatic.jointVelocity[0],name:"[articulationBody_joint_prismatic.jointVelocity[0]]");
-
         AddToObservationList(articulationBody_joint_revolute.jointPosition[0],name:"[articulationBody_joint_revolute.jointPosition[0]]");
         AddToObservationList(articulationBody_joint_revolute.jointVelocity[0],name:"[articulationBody_joint_revolute.jointVelocity[0]]");
         return observation_list;

@@ -40,7 +40,8 @@ class NeuralNetwork(nn.Module):
     def forward(self, s: torch.Tensor) -> torch.Tensor:
         s = s.to(self.dtype)
         s = self.layer_pre(s)
-        s = F.relu(s)
+        # s = F.relu(s)
+        s = F.leaky_relu(s)
         s = self.hiddenLayers(s)
         s = self.layer_post(s)
         
@@ -348,8 +349,6 @@ class SAC_Agent:
 
         #-----------0. move inputs to GPU----------
         s_batch = s_batch.to(self.device) 
-        
-        
         #-----------1. Update Q--------------
         #sample actions stochasticly from current policy
         Q_td_target = self.calc_target(r_batch, s_prime_batch, deterministic=False)
