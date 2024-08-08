@@ -10,6 +10,7 @@ import torch.nn.functional as F
 from ReplayBuffer import ReplayBuffer
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 warnings.filterwarnings("ignore", category=UserWarning)
+from torch.utils.tensorboard import SummaryWriter
 
 class NeuralNetwork(nn.Module):
     '''
@@ -250,6 +251,33 @@ class SAC_Agent:
         self.log_alpha_optimizer = torch.optim.Adam([self.log_alpha],lr=alpha_lr)
         #------------------------------------------------------------------------------
         self.setup_agent()
+        
+    def save_model(self, path: str):
+        torch.save({
+            'actor_state_dict': self.actor.actor_f_mu_net.state_dict(),
+            'actor_optimizer_state_dict': self.actor.optimizer.state_dict(),
+            'critic_Q_net_state_dict': self.critic.critic_Q_net.state_dict(),
+            'critic_Q_target_net_state_dict': self.critic.critic_Q_target_net.state_dict(),
+            'critic_Q_second_net_state_dict': self.critic.critic_Q_second_net.state_dict(),
+            'critic_Q_second_target_net_state_dict': self.critic.critic_Q_second_target_net.state_dict(),
+            'critic_Q_net_optimizer_state_dict': self.critic.optimizer_Q_net.state_dict(),
+            'critic_Q_second_net_optimizer_state_dict': self.critic.optimizer_Q_second_net.state_dict(),
+            'log_alpha': self.log_alpha,
+            'log_alpha_optimizer_state_dict': self.log_alpha_optimizer.state_dict()
+        }, path)
+
+    def load_model(self, path: str):
+        checkpoint = torch.load(path)
+        self.actor.actor_f_mu_net.load_state_dict(checkpoint['actor_state_dict'])
+        self.actor.optimizer.load_state_dict(checkpoint['actor_optimizer_state_dict'])
+        self.critic.critic_Q_net.load_state_dict(checkpoint['critic_Q_net_state_dict'])
+        self.critic.critic_Q_target_net.load_state_dict(checkpoint['critic_Q_target_net_state_dict'])
+        self.critic.critic_Q_second_net.load_state_dict(checkpoint['critic_Q_second_net_state_dict'])
+        self.critic.critic_Q_second_target_net.load_state_dict(checkpoint['critic_Q_second_target_net_state_dict'])
+        self.critic.optimizer_Q_net.load_state_dict(checkpoint['critic_Q_net_optimizer_state_dict'])
+        self.critic.optimizer_Q_second_net.load_state_dict(checkpoint['critic_Q_second_net_optimizer_state_dict'])
+        self.log_alpha = checkpoint['log_alpha']
+        self.log_alpha_optimizer.load_state_dict(checkpoint['log_alpha_optimizer_state_dict'])
 
     def setup_agent(self):
         self.actor = Actor(hidden_size=self.hidden_dim, hidden_layers=1, actor_lr=self.actor_lr, action_bound=self.action_bound,state_dim=self.state_dim, action_dim=self.action_dim,device=self.device)         
@@ -366,6 +394,7 @@ class SAC_Agent:
         #---------4. Update V_target----------------------
         self.critic_target_update(base_net=self.critic.critic_Q_net, target_net=self.critic.critic_Q_target_net, tau=self.tau, soft_update=True)
         self.critic_target_update(base_net=self.critic.critic_Q_second_net, target_net=self.critic.critic_Q_second_target_net, tau=self.tau, soft_update=True)
+        return loss_Q1, loss_Q2, actor_loss, alpha_loss
 #---------------------------------------------------------------------------------------------
 
 

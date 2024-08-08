@@ -1,4 +1,3 @@
-
 import sys
 import os
 import rospy
@@ -45,40 +44,24 @@ class TrainnerNode:
         self.num_update=0
         self.timePassed=0
 
+        #load model
+        model_name = "300"
+        self.agent.load_model(self.save_dir + model_name)
+
     def run_node(self):
         #1.Register Function Runner
-        self.run_function(self.updateNetwork,interval=0.1)
         self.run_function(self.updateInfo,interval=1)
         #2. Register Publishers
         self.register_event_publisher(topic_name="/trainner_node/event/set_action",data_class=Float32MultiArray,queue_size=30)
         #3.Register Subscribers
-        self.register_subscriber(topic_name="/unity/RL_Agent/transition",data_class=TransitionMsg,callback=self.onCall_subscribe_transition)
         #4. Register Service Server
         self.register_service_server(service_name="/trainner_node/service/sample_action",service_class=ProcessArray,handle_func=self.onCall_handleService_sampleAction)
     #----------------------------------FunctionRunner---------------------------
     def run_function(self, func, interval: float):
         rospy.Timer(rospy.Duration(interval), func)
-
-    def updateNetwork(self,event):
-        if(self.timePassed < self.trainTime):
-            if(self.agent.memory.start_training()):
-                self.num_update += 1
-                loss_Q1, loss_Q2, actor_loss, alpha_loss = self.agent.updateNetwork()
-
-                if(self.num_update % self.log_interval == 0):
-                    self.summary_writer.add_scalar("loss_Q1", loss_Q1, self.timePassed)
-                    self.summary_writer.add_scalar("loss_Q2", loss_Q2, self.timePassed)
-                    self.summary_writer.add_scalar("actor_loss", actor_loss, self.timePassed)
-                    self.summary_writer.add_scalar("alpha_loss", alpha_loss, self.timePassed) 
-
-                if(self.num_update % self.save_interval == 0):
-                    print("[INFO][updateNetwork]Saving model at num_update:{0}".format(self.num_update))
-                    self.agent.save_model(self.save_dir + str(self.num_update))
     def updateInfo(self,event):
         self.timePassed+=1
         print("[INFO][updateInfo]timePassed={0}".format(self.timePassed))
-        print("[INFO][updateInfo]self.agent.memory.size={0}".format(self.agent.memory.size()))
-        print("[INFO][updateInfo]num_NetowrkUpdate:{0}".format(self.num_update))
         
     # ------------------------------------Publishers-----------------------------
     def register_event_publisher(self, topic_name: str, data_class, queue_size=10):
@@ -114,16 +97,6 @@ class TrainnerNode:
             print("[ERROR][LMM_Sf_Node]register callback func with name:{0} twice!!".format(callback))
         else:
             self.callbackFuncToTopicName[callback] = topic_name
-    def onCall_subscribe_transition(self,msg):
-        topic_name = self.callbackFuncToTopicName[self.onCall_subscribe_transition]
-        # print("[INFO][onCall_subscribe_transition]state:{0};action:{1};reward:{2};next_state:{3}".format(msg.state,msg.action,msg.reward,msg.next_state))
-        state = np.array(msg.state)
-        action = np.array(msg.action)
-        reward = np.array(msg.reward)
-        next_state = np.array(msg.next_state)
-        trancated_flag = msg.trancated_flag
-        transition = (state,action,reward,next_state)
-        self.agent.memory.put(transition)
 
     # -------------------------------------Service----------------------------------------------------------
     def register_service_server(self,service_name:str,service_class,handle_func):
@@ -149,7 +122,7 @@ class TrainnerNode:
 
 if __name__ == "__main__":
     # -----------------------Main-------------------
-    rospy.init_node(name="trainner_node", anonymous=True, log_level=rospy.INFO)
+    rospy.init_node(name="actor_node", anonymous=True, log_level=rospy.INFO)
     try:
         node = TrainnerNode()
         node.run_node()
