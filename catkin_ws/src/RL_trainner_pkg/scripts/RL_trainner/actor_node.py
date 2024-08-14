@@ -46,7 +46,7 @@ class TrainnerNode:
         self.timePassed=0
 
         #load model
-        model_name = "5000"
+        model_name = "6000"
         self.agent.load_model(self.save_dir + model_name)
 
     def run_node(self):
@@ -55,7 +55,8 @@ class TrainnerNode:
         #2. Register Publishers
         self.register_event_publisher( topic_name="/unity/RL_Agent/event_sample_action_response",data_class=Float32IDMsg)
         #3.Register Subscribers
-        self.register_subscriber(topic_name="/unity/RL_Agent/event_sample_action",data_class=Float32IDMsg,callback=self.onCall_handleEvent_sampleAction)
+        self.register_subscriber(topic_name="/unity/RL_Agent/event_sample_action",data_class=Float32IDMsg,callback=self.onCall_subscribeEvent_sampleAction)
+        self.register_subscriber(topic_name="/unity/RL_Agent/episodic_reward",data_class=Float32IDMsg,callback=self.onCall_subscribe_episodicReward)
         #4. Register Service Server
         # for id in range(self.num_agents):
         #     self.register_service_server(service_name="/trainner_node/service/sample_action/id_{0}".format(id),service_class=ProcessArray,handle_func=self.onCall_handleService_sampleAction)
@@ -100,7 +101,7 @@ class TrainnerNode:
             print("[ERROR][LMM_Sf_Node]register callback func with name:{0} twice!!".format(callback))
         else:
             self.callbackFuncToTopicName[callback] = topic_name
-    def onCall_handleEvent_sampleAction(self,msg):
+    def onCall_subscribeEvent_sampleAction(self,msg):
         response_topic_name="/unity/RL_Agent/event_sample_action_response"
         publisher = self.publishersDict[response_topic_name]
 
@@ -115,34 +116,14 @@ class TrainnerNode:
         response.id = id
         response.data = action.tolist()
         publisher.publish(response)
-        
+    def onCall_subscribe_episodicReward(self,msg):
+        topic_name = self.callbackFuncToTopicName[self.onCall_subscribe_episodicReward]
+        # print("[INFO][onCall_subscribe_transition]state:{0};action:{1};reward:{2};next_state:{3}".format(msg.state,msg.action,msg.reward,msg.next_state))
+        reward = np.array(msg.data)
+        self.summary_writer.add_scalar("episodic_reward", reward, self.timePassed)
     # -------------------------------------Service----------------------------------------------------------
     def register_service_server(self,service_name:str,service_class,handle_func):
         service = rospy.Service(service_name, service_class, handle_func)
-    # def onCall_handleService_sampleAction(self,req):
-    #     # print("[INFO][onCall_handleService_sampleAction]Incomming request")
-    #     # Submit the request to be handled asynchronously
-    #     future = self.threadPoolExecutor.submit(self._thread_processRequest_sampleAction, req)
-    #     # Wait for the future to complete and obtain the response
-    #     response_data = future.result()
-    #     response = ProcessArrayResponse()
-    #     response.output = Float32MultiArray(data=response_data.data)
-    #     return response
-    # def _thread_processRequest_sampleAction(self,req):
-    #     print(f"Thread {threading.current_thread().name} processing request; state={req.input.data}")
-    #     state = np.array(req.input.data)
-    #     action = self.agent.get_action(state,train=False)
-    #     response = Float32MultiArray(data=action.tolist())
-    #     print(f"Thread {threading.current_thread().name} completed request; action={response.data}")
-    #     return response
-
-    # def onCall_handleService_sampleAction(self,req):
-    #     state = np.array(req.input.data)
-    #     action = self.agent.get_action(state,train=False)
-    #     response = ProcessArrayResponse()
-    #     response.output = Float32MultiArray(data=action.tolist())
-    #     return response
-    
 
 
 if __name__ == "__main__":

@@ -7,16 +7,25 @@ public abstract class AgentRewardCalculatorBase : MonoBehaviour
     public abstract List<float> CalculateReward();
     protected float step_reward ;
 
-    public void SetReward(float reward)
+    protected float episode_reward;
+
+    public void SetStepReward(float reward)
     {
         this.step_reward = reward;
     }
 
-    public void AddReward(float reward)
+    public void AddToStepReward(float reward)
     {
         this.step_reward += reward;
     }
 
-    
+    public void ResetEpisodeReward()
+    {
+        episode_reward = 0;
+    }
+    public float GetEpisodeReward()
+    {
+        return episode_reward;
+    }
 
 }

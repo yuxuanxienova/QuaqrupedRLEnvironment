@@ -5,7 +5,7 @@ import rospy
 import numpy as np
 import torch
 import PIL
-from std_msgs.msg import String
+from std_msgs.msg import String,Float32
 from std_msgs.msg import Float32MultiArray
 from RL_trainner_pkg.msg import TransitionMsg, Float32IDMsg
 from RL_trainner_pkg.srv import ProcessArray, ProcessArrayResponse
@@ -30,7 +30,7 @@ class TrainnerNode:
         self.log_dir= "./catkin_ws/src/RL_trainner_pkg/logs"
         self.save_dir = "./catkin_ws/src/RL_trainner_pkg/models/"
         self.save_interval = 1000
-        self.log_interval = 100
+        self.log_interval = 20
         # initialize components
         clean_log_dir(self.log_dir)
         self.summary_writer = SummaryWriter(log_dir=self.log_dir)
@@ -54,6 +54,7 @@ class TrainnerNode:
         #3.Register Subscribers
         self.register_subscriber(topic_name="/unity/RL_Agent/event_sample_action",data_class=Float32IDMsg,callback=self.onCall_handleEvent_sampleAction)
         self.register_subscriber(topic_name="/unity/RL_Agent/transition",data_class=TransitionMsg,callback=self.onCall_subscribe_transition)
+        self.register_subscriber(topic_name="/unity/RL_Agent/episodic_reward",data_class=Float32,callback=self.onCall_subscribe_episodicReward)
         #4. Register Service Server
         # self.register_service_server(service_name="/trainner_node/service/sample_action",service_class=ProcessArray,handle_func=self.onCall_handleService_sampleAction)
     #----------------------------------FunctionRunner---------------------------
@@ -66,7 +67,7 @@ class TrainnerNode:
                 self.num_update += 1
                 loss_Q1, loss_Q2, actor_loss, alpha_loss = self.agent.updateNetwork()
 
-                if(self.num_update % self.log_interval == 0):
+                if(self.timePassed % self.log_interval == 0):
                     self.summary_writer.add_scalar("loss_Q1", loss_Q1, self.timePassed)
                     self.summary_writer.add_scalar("loss_Q2", loss_Q2, self.timePassed)
                     self.summary_writer.add_scalar("actor_loss", actor_loss, self.timePassed)
@@ -128,7 +129,6 @@ class TrainnerNode:
     def onCall_handleEvent_sampleAction(self,msg):
         response_topic_name="/unity/RL_Agent/event_sample_action_response"
         publisher = self.publishersDict[response_topic_name]
-
         #Parse the message
         id = msg.id
         state = np.array(msg.data)
@@ -140,26 +140,13 @@ class TrainnerNode:
         response.id = id
         response.data = action.tolist()
         publisher.publish(response)
+    def onCall_subscribe_episodicReward(self,msg):
+        # topic_name = self.callbackFuncToTopicName[self.onCall_subscribe_episodicReward]
+        reward = np.array(msg.data)
+        self.summary_writer.add_scalar("episodic_reward", reward, self.timePassed)
     # -------------------------------------Service----------------------------------------------------------
     def register_service_server(self,service_name:str,service_class,handle_func):
         service = rospy.Service(service_name, service_class, handle_func)
-    # def onCall_handleService_sampleAction(self,req):
-    #     # print("[INFO][onCall_handleService_sampleAction]Incomming request")
-    #     # Submit the request to be handled asynchronously
-    #     future = self.threadPoolExecutor.submit(self._thread_processRequest_sampleAction, req)
-    #     # Wait for the future to complete and obtain the response
-    #     response_data = future.result()
-    #     response = ProcessArrayResponse()
-    #     response.output = Float32MultiArray(data=response_data.data)
-    #     return response
-    # def _thread_processRequest_sampleAction(self,req):
-    #     state = np.array(req.input.data)
-    #     if(self.timePassed < self.trainTime):
-    #         action = self.agent.get_action(state,train=True)
-    #     else:
-    #         action = self.agent.get_action(state,train=False)
-    #     response = Float32MultiArray(data=action.tolist())
-    #     return response
 
 
 if __name__ == "__main__":

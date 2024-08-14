@@ -12,13 +12,15 @@ public class BallAgentRewardCalculator : AgentRewardCalculatorBase
             Mathf.Abs(ball.transform.position.x - gameObject.transform.position.x) > 3f ||
             Mathf.Abs(ball.transform.position.z - gameObject.transform.position.z) > 3f)
         {
-            SetReward(-1f);
+            SetStepReward(-1f);
             agent.Reset();
         }
         else
         {
-            SetReward(0.1f);
+            SetStepReward(0.1f);
         }
+
+        episode_reward += step_reward;
         return new List<float>{step_reward};
 
     }
@@ -27,7 +29,7 @@ public class BallAgentRewardCalculator : AgentRewardCalculatorBase
     void Start()
     {
         agent = gameObject.GetComponent<Agent>();
-        
+        episode_reward = 0;
     }
 
     // Update is called once per frame

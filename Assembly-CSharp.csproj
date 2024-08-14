@@ -107,6 +107,7 @@
     <Compile Include="Assets/Scripts/RLAgent/3DBall/BallAgentRewardCalculator.cs" />
     <Compile Include="Assets/RosMessages/Std/msg/MultiArrayLayoutMsg.cs" />
     <Compile Include="Assets/RosMessages/Std/msg/UInt8MultiArrayMsg.cs" />
+    <Compile Include="Assets/Scripts/Ros_Unity/PublishEpisodicReward.cs" />
     <Compile Include="Assets/Scripts/RLAgent/QuadrupedAgent/QuadrupedAgentObserver.cs" />
     <Compile Include="Assets/RosMessages/Std/msg/UInt8Msg.cs" />
     <Compile Include="Assets/Scripts/RLAgent/PendulumAgent/PendulumAgentController.cs" />

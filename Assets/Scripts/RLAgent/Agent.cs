@@ -14,7 +14,7 @@ public class Agent : MonoBehaviour
     // public ServiceClientSampleAction serviceClientSampleAction;
     public PublishEventSampleAction publishEventSampleAction;
     public PublishTransition publishTransition;
-
+    public PublishEpisodicReward publishEpisodicReward;
     private bool trancated_flag=false;
 
     private float timeElapsed_actionUpdate = 0;
@@ -52,7 +52,11 @@ public class Agent : MonoBehaviour
     public void Reset()
     {
         episodeCount += 1;
+        publishEpisodicReward.CallPublishEpisodicReward(agentRewardCalculator.GetEpisodeReward());
+        Debug.Log($"[INFO][Agent][agent_id={id}][episodeCount={episodeCount}][episodeReward={agentRewardCalculator.GetEpisodeReward()}])");
+        Debug.Log($"[INFO][Agent][agent_id={id}][episodeCount={episodeCount}]Resetting agent");
         agentController.Reset();
+        agentRewardCalculator.ResetEpisodeReward();
         trancated_flag=true;
     }
     private void UpdateAction()
