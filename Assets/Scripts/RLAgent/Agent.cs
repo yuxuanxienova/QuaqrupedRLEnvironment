@@ -3,13 +3,16 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Threading.Tasks;
 public class Agent : MonoBehaviour
-{
+{    
+    private static int nextId = 0; // Static counter to track the next available ID
+
     [Header("Settings")][Space(10)]
     public AgentObserverBase agentObserver;
     public AgentControllerBase agentController;
     public AgentRewardCalculatorBase agentRewardCalculator;
 
-    public ServiceClientSampleAction serviceClientSampleAction;
+    // public ServiceClientSampleAction serviceClientSampleAction;
+    public PublishEventSampleAction publishEventSampleAction;
     public PublishTransition publishTransition;
 
     private bool trancated_flag=false;
@@ -25,10 +28,18 @@ public class Agent : MonoBehaviour
 
     private int episodeCount = 0;
 
+    public int id = 0;
+
+    private int num_update_action=0;
+
     void Start()
     {
+        // Assign a unique ID to this agent
+        id = nextId;
+        nextId++; // Increment the static counter for the next agent
 
-
+        // Add this agent to the AgentManager dictionary
+        AgentManager.Instance.AddAgentToDict(id, this);
     }
 
     // Update is called once per frame
@@ -49,34 +60,27 @@ public class Agent : MonoBehaviour
         timeElapsed_actionUpdate += Time.deltaTime;
         if(timeElapsed_actionUpdate > actionUpdateInterval)
         {
+            num_update_action+=1;
+            
             //Start a coroutine 
-            StartCoroutine(CallAsyncUpdateAction());
+            // StartCoroutine(CallAsyncUpdateAction());
+            float[] obs_arr = GetObservation();
+            // UnityEngine.Debug.Log($"[INFO][Agent][agent_id={id}][num_update_action={num_update_action}]Observation:"+ExtensionMethods.FloatArrayToString(obs_arr));
+
+            // serviceClientSampleAction.SampleActionFromObservationServiceRequest(obs_arr, OnAgentSampleActionResponse);
+            publishEventSampleAction.CallPublishEventSampleAction(obs_arr,id_agent:id);
             timeElapsed_actionUpdate=0;
+
         }
     }
-    private IEnumerator CallAsyncUpdateAction()
+    void OnAgentSampleActionResponse(float[] action)
     {
-        float[] obs_arr = GetObservation();
-        var task = serviceClientSampleAction.SampleActionFromObservationAsync(obs_arr);
-        // Wait for the task to complete
-        yield return new WaitUntil(() => task.IsCompleted);
-        // Handle the result
-        if (task.IsFaulted)
-        {
-            Debug.LogError("Error in async operation: " + task.Exception);
-        }
-        else if (task.IsCanceled)
-        {
-            Debug.LogWarning("Async operation was canceled");
-        }
-        else
-        {
-            float[] result = task.Result;
-            List<float> floatList = new List<float>(result);
-            SetExecuteAction(floatList);
-        }
+        // Handle the response specific to this agent
+        // Debug.Log($"[INFO][Agent][agent_id={id}][num_update_action={num_update_action}]Received action: " + string.Join(",", action));
+        List<float> floatList = new List<float>(action);
+        SetExecuteAction(floatList);
+    }
 
-    } 
     private void UpdateTransitionPublish()
     {
         timeElapsed_transitionPublishUpdate += Time.deltaTime;
@@ -108,11 +112,6 @@ public class Agent : MonoBehaviour
     {
         agentController.SetAction(action_list);
         agentController.ExecuteAction();
-    }
-    public async Task<float[]> SampleActionAsync(float[] obs_arr)
-    {
-        float[] action_arr = await serviceClientSampleAction.SampleActionFromObservationAsync(obs_arr);
-        return action_arr;
     }
 
     public float[] GetAction()

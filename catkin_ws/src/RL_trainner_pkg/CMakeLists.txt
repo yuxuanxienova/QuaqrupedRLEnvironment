@@ -11,6 +11,7 @@ find_package(catkin REQUIRED COMPONENTS
 add_message_files(
   FILES
   TransitionMsg.msg
+  Float32IDMsg.msg
 )
 add_service_files(
   FILES

@@ -3,14 +3,18 @@ using Unity.Robotics.ROSTCPConnector;
 using System.Threading.Tasks;
 using RosMessageTypes.RLTrainnerPkg;
 using RosMessageTypes.Std;
+using System.Collections.Generic;
+using System;
 public class ServiceClientSampleAction : MonoBehaviour
 {
-    public Agent agent;
     ROSConnection rosConnection;
-    public string serviceName = "/trainner_node/service/sample_action";
+    public string serviceNamehead = "/trainner_node/service/sample_action/id_";
+    private string serviceName;
+    private Dictionary<Guid, Action<float[]>> pendingRequests = new Dictionary<Guid, Action<float[]>>();
     // Start is called before the first frame update
     void Start()
     {
+        serviceName = serviceNamehead + this.gameObject.GetComponent<Agent>().id;
         rosConnection = ROSConnection.GetOrCreateInstance();
         rosConnection.RegisterRosService<ProcessArrayRequest,ProcessArrayResponse>(serviceName);
     }
@@ -21,36 +25,41 @@ public class ServiceClientSampleAction : MonoBehaviour
         
     }
 
-    public async Task<float[]> SampleActionFromObservationAsync(float[] obsArray)
+    public void SampleActionFromObservationServiceRequest(float[] obsArray, Action<float[]> onResponse)
     {
-        return await CallSampleActionService(obsArray);
-    }
+        // Generate a unique identifier for the request
+        Guid requestId = Guid.NewGuid();
 
-    private Task<float[]> CallSampleActionService(float[] inputArray)
-    {
-        var tcs = new TaskCompletionSource<float[]>();
+        // Store the callback associated with this request
+        pendingRequests[requestId] = onResponse;
 
+        // Create the service request
         ProcessArrayRequest request = new ProcessArrayRequest
         {
             input = new Float32MultiArrayMsg
             {
-                data = inputArray
+                data = obsArray
             }
         };
 
-        rosConnection.SendServiceMessage<ProcessArrayResponse>(serviceName, request,
-            (response) =>
-            {
-                if (response != null && response.output != null && response.output.data != null)
-                {
-                    tcs.SetResult(response.output.data);
-                }
-                else
-                {
-                    tcs.SetException(new System.Exception("Failed to get valid response"));
-                }
-            });
+        // Send the service request and pass the request ID to the response handler
+        rosConnection.SendServiceMessage<ProcessArrayResponse>(serviceName, request, response => OnServiceResponse(response, requestId));
+    }
 
-        return tcs.Task;
+    private void OnServiceResponse(ProcessArrayResponse response, Guid requestId)
+    {
+        if (pendingRequests.TryGetValue(requestId, out var onResponse))
+        {
+            // Remove the request from the dictionary
+            pendingRequests.Remove(requestId);
+
+            // Pass the response data to the corresponding agent's callback
+            onResponse?.Invoke(response.output.data);
+        }
+        else
+        {
+            // Handle the case where the request ID is not found
+            Debug.LogError("Received response for unknown request ID");
+        }
     }
 }

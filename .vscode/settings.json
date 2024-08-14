@@ -52,5 +52,6 @@
         "Temp/": true
     },
     "dotnet.defaultSolution": "QuaqrupedRLEnvironment.sln",
-    "git.ignoreLimitWarning": true
+    "git.ignoreLimitWarning": true,
+    "ros.distro": "noetic"
 }

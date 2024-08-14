@@ -39,9 +39,9 @@ public class UIController : MonoBehaviour
         Debug.Log("[INFO][UIController][TestGetActionClicked]ActionList:"+floatListToString);
     }
 
-    public async void TestSampleActionAsyncClicked()
-    {
-        float[] action_arr = await agent.SampleActionAsync(agent.GetObservation());
-        Debug.Log("[INFO][UIController][TestSampleActionAsyncClicked]action_arr:"+ExtensionMethods.FloatArrayToString(action_arr));
-    }
+    // public async void TestSampleActionAsyncClicked()
+    // {
+    //     float[] action_arr = await agent.SampleActionAsync(agent.GetObservation());
+    //     Debug.Log("[INFO][UIController][TestSampleActionAsyncClicked]action_arr:"+ExtensionMethods.FloatArrayToString(action_arr));
+    // }
 }

@@ -7,7 +7,7 @@ import torch
 import PIL
 from std_msgs.msg import String
 from std_msgs.msg import Float32MultiArray
-from RL_trainner_pkg.msg import TransitionMsg
+from RL_trainner_pkg.msg import TransitionMsg, Float32IDMsg
 from RL_trainner_pkg.srv import ProcessArray, ProcessArrayResponse
 from SAC import SAC_Agent
 import concurrent.futures
@@ -50,11 +50,12 @@ class TrainnerNode:
         self.run_function(self.updateNetwork,interval=0.1)
         self.run_function(self.updateInfo,interval=1)
         #2. Register Publishers
-        self.register_event_publisher(topic_name="/trainner_node/event/set_action",data_class=Float32MultiArray,queue_size=30)
+        self.register_event_publisher( topic_name="/unity/RL_Agent/event_sample_action_response",data_class=Float32IDMsg)
         #3.Register Subscribers
+        self.register_subscriber(topic_name="/unity/RL_Agent/event_sample_action",data_class=Float32IDMsg,callback=self.onCall_handleEvent_sampleAction)
         self.register_subscriber(topic_name="/unity/RL_Agent/transition",data_class=TransitionMsg,callback=self.onCall_subscribe_transition)
         #4. Register Service Server
-        self.register_service_server(service_name="/trainner_node/service/sample_action",service_class=ProcessArray,handle_func=self.onCall_handleService_sampleAction)
+        # self.register_service_server(service_name="/trainner_node/service/sample_action",service_class=ProcessArray,handle_func=self.onCall_handleService_sampleAction)
     #----------------------------------FunctionRunner---------------------------
     def run_function(self, func, interval: float):
         rospy.Timer(rospy.Duration(interval), func)
@@ -124,27 +125,41 @@ class TrainnerNode:
         trancated_flag = msg.trancated_flag
         transition = (state,action,reward,next_state)
         self.agent.memory.put(transition)
+    def onCall_handleEvent_sampleAction(self,msg):
+        response_topic_name="/unity/RL_Agent/event_sample_action_response"
+        publisher = self.publishersDict[response_topic_name]
 
+        #Parse the message
+        id = msg.id
+        state = np.array(msg.data)
+        # print("[INFO][onCall_handleEvent_sampleAction]Incomming request; id={0}; state={1}".format(id,state))
+        #Get action
+        action = self.agent.get_action(state,train=False)
+        #Publish response
+        response = Float32IDMsg()
+        response.id = id
+        response.data = action.tolist()
+        publisher.publish(response)
     # -------------------------------------Service----------------------------------------------------------
     def register_service_server(self,service_name:str,service_class,handle_func):
         service = rospy.Service(service_name, service_class, handle_func)
-    def onCall_handleService_sampleAction(self,req):
-        # print("[INFO][onCall_handleService_sampleAction]Incomming request")
-        # Submit the request to be handled asynchronously
-        future = self.threadPoolExecutor.submit(self._thread_processRequest_sampleAction, req)
-        # Wait for the future to complete and obtain the response
-        response_data = future.result()
-        response = ProcessArrayResponse()
-        response.output = Float32MultiArray(data=response_data.data)
-        return response
-    def _thread_processRequest_sampleAction(self,req):
-        state = np.array(req.input.data)
-        if(self.timePassed < self.trainTime):
-            action = self.agent.get_action(state,train=True)
-        else:
-            action = self.agent.get_action(state,train=False)
-        response = Float32MultiArray(data=action.tolist())
-        return response
+    # def onCall_handleService_sampleAction(self,req):
+    #     # print("[INFO][onCall_handleService_sampleAction]Incomming request")
+    #     # Submit the request to be handled asynchronously
+    #     future = self.threadPoolExecutor.submit(self._thread_processRequest_sampleAction, req)
+    #     # Wait for the future to complete and obtain the response
+    #     response_data = future.result()
+    #     response = ProcessArrayResponse()
+    #     response.output = Float32MultiArray(data=response_data.data)
+    #     return response
+    # def _thread_processRequest_sampleAction(self,req):
+    #     state = np.array(req.input.data)
+    #     if(self.timePassed < self.trainTime):
+    #         action = self.agent.get_action(state,train=True)
+    #     else:
+    #         action = self.agent.get_action(state,train=False)
+    #     response = Float32MultiArray(data=action.tolist())
+    #     return response
 
 
 if __name__ == "__main__":
