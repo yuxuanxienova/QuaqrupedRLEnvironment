@@ -72,8 +72,8 @@
     <Compile Include="Assets/Scripts/RLAgent/3DBall/BallAgentObserver.cs" />
     <Compile Include="Assets/RosMessages/Std/msg/BoolMsg.cs" />
     <Compile Include="Assets/RosMessages/Std/msg/StringMsg.cs" />
+    <Compile Include="Assets/Scripts/Algo/IK/IK_LF.cs" />
     <Compile Include="Assets/RosMessages/Std/msg/Int8Msg.cs" />
-    <Compile Include="Assets/Scripts/RLAgent/3DBall/BallResetController.cs" />
     <Compile Include="Assets/RosMessages/Std/msg/Int32Msg.cs" />
     <Compile Include="Assets/Scripts/RLAgent/AgentControllerBase.cs" />
     <Compile Include="Assets/RosMessages/Std/msg/UInt16MultiArrayMsg.cs" />
@@ -85,6 +85,7 @@
     <Compile Include="Assets/RosMessages/Std/msg/EmptyMsg.cs" />
     <Compile Include="Assets/Scripts/RLAgent/PendulumAgent/PendulumResetController.cs" />
     <Compile Include="Assets/RosMessages/Std/msg/Float64Msg.cs" />
+    <Compile Include="Assets/Scripts/Algo/IK/IK_RH.cs" />
     <Compile Include="Assets/Scripts/Ros_Unity/PublishObservationList.cs" />
     <Compile Include="Assets/RosMessages/Std/msg/CharMsg.cs" />
     <Compile Include="Assets/Scripts/RLAgent/PendulumAgent/PendulumAgentRewardCalculator.cs" />
@@ -93,7 +94,9 @@
     <Compile Include="Assets/RosMessages/RLTrainnerPkg/msg/Float32IDMsgMsg.cs" />
     <Compile Include="Assets/RosMessages/Std/msg/UInt16Msg.cs" />
     <Compile Include="Assets/RosMessages/Std/msg/UInt32MultiArrayMsg.cs" />
+    <Compile Include="Assets/Scripts/Algo/IK/IK_RF.cs" />
     <Compile Include="Assets/RosMessages/Std/msg/MultiArrayDimensionMsg.cs" />
+    <Compile Include="Assets/Scripts/RLAgent/QuadrupedAgent/QuadrupedAgentController.cs" />
     <Compile Include="Assets/RosMessages/Std/msg/UInt64Msg.cs" />
     <Compile Include="Assets/Scripts/AgentManager.cs" />
     <Compile Include="Assets/RosMessages/RLTrainnerPkg/msg/TransitionMsgMsg.cs" />
@@ -105,13 +108,16 @@
     <Compile Include="Assets/Scripts/RLAgent/3DBall/BallAgentController.cs" />
     <Compile Include="Assets/RosMessages/Std/msg/ColorRGBAMsg.cs" />
     <Compile Include="Assets/Scripts/RLAgent/3DBall/BallAgentRewardCalculator.cs" />
+    <Compile Include="Assets/Scripts/Algo/IK/IK_LH.cs" />
     <Compile Include="Assets/RosMessages/Std/msg/MultiArrayLayoutMsg.cs" />
     <Compile Include="Assets/RosMessages/Std/msg/UInt8MultiArrayMsg.cs" />
     <Compile Include="Assets/Scripts/Ros_Unity/PublishEpisodicReward.cs" />
     <Compile Include="Assets/Scripts/RLAgent/QuadrupedAgent/QuadrupedAgentObserver.cs" />
     <Compile Include="Assets/RosMessages/Std/msg/UInt8Msg.cs" />
     <Compile Include="Assets/Scripts/RLAgent/PendulumAgent/PendulumAgentController.cs" />
+    <Compile Include="Assets/Scripts/RLAgent/QuadrupedAgent/QuadrupedAgentRewardCalculator.cs" />
     <Compile Include="Assets/Scripts/UI/UIController.cs" />
+    <Compile Include="Assets/Scripts/RLAgent/GroundContactCustom.cs" />
     <Compile Include="Assets/RosMessages/Std/msg/UInt32Msg.cs" />
     <Compile Include="Assets/Scripts/Ros_Unity/PublishEventSampleAction.cs" />
     <Compile Include="Assets/RosMessages/Std/msg/Int32MultiArrayMsg.cs" />
