@@ -30,6 +30,18 @@ public class PendulumAgentObserver : AgentObserverBase
         return observation_list;
     }
 
-    
+    public override void Reset()
+    {
+        throw new System.NotImplementedException();
+    }
 
+    public override void OnEpisodeBegin()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public override void OnAgentStart()
+    {
+        throw new System.NotImplementedException();
+    }
 }

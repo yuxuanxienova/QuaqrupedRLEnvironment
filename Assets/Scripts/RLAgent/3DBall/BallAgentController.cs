@@ -47,4 +47,13 @@ public class BallAgentController : AgentControllerBase
     {
         
     }
+
+    public override void OnEpisodeBegin()
+    {
+    }
+
+    public override void OnAgentStart()
+    {
+        throw new System.NotImplementedException();
+    }
 }

@@ -4,19 +4,24 @@ using UnityEngine;
 
 public abstract class AgentControllerBase : MonoBehaviour
 {
+
+
+    protected List<float> action_list;
+    public abstract void ExecuteAction();
+    public abstract void Reset();
+    public abstract void OnEpisodeBegin();
+    public abstract void OnAgentStart();
+
     public void SetAction(List<float> _action_list)
     {
         action_list =_action_list;
 
     }
-    public abstract void ExecuteAction();
-    public abstract void Reset();
+
     public List<float> GetAction()
     {
         return action_list;
     }
-
-    protected List<float> action_list;
     protected void initializeAction(int action_dim)
     {
         // Initialize actionList with zeros

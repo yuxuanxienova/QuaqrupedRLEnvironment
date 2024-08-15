@@ -25,6 +25,21 @@ public class BallAgentRewardCalculator : AgentRewardCalculatorBase
 
     }
 
+    public override void OnAgentStart()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public override void OnEpisodeBegin()
+    {
+        
+    }
+
+    public override void Reset()
+    {
+        this.ResetEpisodeReward();
+    }
+
     // Start is called before the first frame update
     void Start()
     {

@@ -18,6 +18,20 @@ public class BallAgentObserver : AgentObserverBase
         return observation_list;
     }
 
+    public override void OnAgentStart()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public override void OnEpisodeBegin()
+    {
+    }
+
+    public override void Reset()
+    {
+        ClearObservationList();
+    }
+
     // Start is called before the first frame update
     void Start()
     {

@@ -40,6 +40,15 @@ public class Agent : MonoBehaviour
 
         // Add this agent to the AgentManager dictionary
         AgentManager.Instance.AddAgentToDict(id, this);
+        
+
+        //Call Start for all components
+        agentController.OnAgentStart();
+        agentObserver.OnAgentStart();
+        agentRewardCalculator.OnAgentStart();
+
+        //Call Episode Begin
+        OnEpisodeBegin();
     }
 
     // Update is called once per frame
@@ -55,9 +64,26 @@ public class Agent : MonoBehaviour
         publishEpisodicReward.CallPublishEpisodicReward(agentRewardCalculator.GetEpisodeReward());
         Debug.Log($"[INFO][Agent][agent_id={id}][episodeCount={episodeCount}][episodeReward={agentRewardCalculator.GetEpisodeReward()}])");
         Debug.Log($"[INFO][Agent][agent_id={id}][episodeCount={episodeCount}]Resetting agent");
+
+        //Reset all components
         agentController.Reset();
-        agentRewardCalculator.ResetEpisodeReward();
+        agentObserver.Reset();
+        agentRewardCalculator.Reset();
+
+        //Set the flag
         trancated_flag=true;
+
+        //new episode
+        OnEpisodeBegin();
+    }
+    public void OnEpisodeBegin()
+    {
+        Debug.Log($"[INFO][Agent][agent_id={id}]OnEpisodeBegin");
+        //Initialize all components
+        agentController.OnEpisodeBegin();
+        agentObserver.OnEpisodeBegin();
+        agentRewardCalculator.OnEpisodeBegin();
+
     }
     private void UpdateAction()
     {

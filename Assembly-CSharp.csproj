@@ -83,6 +83,7 @@
     <Compile Include="Assets/RosMessages/Std/msg/Int64MultiArrayMsg.cs" />
     <Compile Include="Assets/RosMessages/Std/msg/Float32Msg.cs" />
     <Compile Include="Assets/RosMessages/Std/msg/EmptyMsg.cs" />
+    <Compile Include="Assets/Scripts/RLAgent/OrientationCubeController.cs" />
     <Compile Include="Assets/Scripts/RLAgent/PendulumAgent/PendulumResetController.cs" />
     <Compile Include="Assets/RosMessages/Std/msg/Float64Msg.cs" />
     <Compile Include="Assets/Scripts/Algo/IK/IK_RH.cs" />
@@ -99,6 +100,7 @@
     <Compile Include="Assets/Scripts/RLAgent/QuadrupedAgent/QuadrupedAgentController.cs" />
     <Compile Include="Assets/RosMessages/Std/msg/UInt64Msg.cs" />
     <Compile Include="Assets/Scripts/AgentManager.cs" />
+    <Compile Include="Assets/Scripts/RLAgent/DirectionIndicator.cs" />
     <Compile Include="Assets/RosMessages/RLTrainnerPkg/msg/TransitionMsgMsg.cs" />
     <Compile Include="Assets/RosMessages/Std/msg/ByteMsg.cs" />
     <Compile Include="Assets/RosMessages/Std/msg/UInt64MultiArrayMsg.cs" />

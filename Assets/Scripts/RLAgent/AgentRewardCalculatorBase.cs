@@ -9,6 +9,9 @@ public abstract class AgentRewardCalculatorBase : MonoBehaviour
 
     protected float episode_reward;
 
+    public abstract void Reset();
+    public abstract void OnEpisodeBegin();
+    public abstract void OnAgentStart();
     public void SetStepReward(float reward)
     {
         this.step_reward = reward;
@@ -18,6 +21,8 @@ public abstract class AgentRewardCalculatorBase : MonoBehaviour
     {
         this.step_reward += reward;
     }
+
+
 
     public void ResetEpisodeReward()
     {

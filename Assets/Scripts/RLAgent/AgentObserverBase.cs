@@ -6,7 +6,9 @@ public abstract class AgentObserverBase : MonoBehaviour
     public abstract List<float> GetObservations();
     protected List<float> observation_list;
     public int Observation_dim;
-
+    public abstract void Reset();
+    public abstract void OnEpisodeBegin();
+    public abstract void OnAgentStart();
     //Utilities
     public void CheckObservationListDim()
     {
@@ -104,7 +106,7 @@ public abstract class AgentObserverBase : MonoBehaviour
     /// Adds a boolean observation to the vector observation of the agent.
     /// </summary>
     /// <param name="observation">Observation.</param>
-    public void AddToObservationList(bool observation)
+    public void AddToObservationList(bool observation, string name)
     {
         AddFloatObs(observation ? 1f : 0f, name);
     }

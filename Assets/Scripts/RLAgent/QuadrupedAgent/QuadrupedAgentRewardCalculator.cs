@@ -23,6 +23,21 @@ public class QuadrupedAgentRewardCalculator : AgentRewardCalculatorBase
 
     }
 
+    public override void OnAgentStart()
+    {
+
+    }
+
+    public override void OnEpisodeBegin()
+    {
+        Debug.Log("[INFO][QuadrupedAgentRewardCalculator]OnEpisodeBegin");
+    }
+
+    public override void Reset()
+    {
+        this.ResetEpisodeReward();
+    }
+
     // Start is called before the first frame update
     void Start()
     {
