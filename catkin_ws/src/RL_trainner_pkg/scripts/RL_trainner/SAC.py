@@ -239,7 +239,7 @@ class SAC_Agent:
         self.criterion = nn.MSELoss() 
         self.actor_lr = 3e-4
         self.critic_lr = 3e-3
-        self.hidden_dim = 128
+        self.hidden_dim = 512
         #--------------------------------
         
         #----------------Module Used to Adjust Entropy---------------------------------

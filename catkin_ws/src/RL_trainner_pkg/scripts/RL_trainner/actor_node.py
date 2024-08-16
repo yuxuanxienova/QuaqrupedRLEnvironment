@@ -23,8 +23,8 @@ def clean_log_dir(log_dir):
 class TrainnerNode:
     def __init__(self) -> None:
         #Parameters
-        self.state_dim = 8
-        self.action_dim = 2
+        self.state_dim = 73
+        self.action_dim = 16
         self.trainTime=1000
         self.log_dir= "./catkin_ws/src/RL_trainner_pkg/logs"
         self.save_dir = "./catkin_ws/src/RL_trainner_pkg/models/"

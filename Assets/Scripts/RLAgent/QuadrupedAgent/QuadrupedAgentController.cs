@@ -75,15 +75,23 @@ public class QuadrupedAgentController : AgentControllerBase
 
     //CPG
     public float delta_phi_0_rad = Mathf.PI/10;
-    private float phi_RH_rad = 0;
-    private float phi_LH_rad = 0;
-    private float phi_RF_rad = 0;
-    private float phi_LF_rad = 0;
+    [HideInInspector]
+    public float phi_RH_rad = 0;
+    [HideInInspector]
+    public float phi_LH_rad = 0;
+    [HideInInspector]
+    public float phi_RF_rad = 0;
+    [HideInInspector]
+    public float phi_LF_rad = 0;
 
-    private float delta_phi_RH_rad = 0;
-    private float delta_phi_LH_rad = 0;
-    private float delta_phi_RF_rad = 0;
-    private float delta_phi_LF_rad = 0;
+    [HideInInspector]
+    public float delta_phi_RH_rad = 0;
+    [HideInInspector]
+    public float delta_phi_LH_rad = 0;
+    [HideInInspector]
+    public float delta_phi_RF_rad = 0;
+    [HideInInspector]
+    public float delta_phi_LF_rad = 0;
 
     public IK_RH iK_RH;
     public IK_RF iK_RF;
@@ -173,111 +181,7 @@ public class QuadrupedAgentController : AgentControllerBase
         articulationBody_LF_THIGH.SetDriveTarget(ArticulationDriveAxis.X,alpha_LF_deg);
         articulationBody_LF_SHANK.SetDriveTarget(ArticulationDriveAxis.X,beta_LF_deg);
     }
-    private int num_update=0;
-    public GameObject ef_position_indicator_RH;
-    void Update()
-    {
-        num_update++;
-        TestIK();
-    }
 
-    public void TestCPGUpdate()
-    {
-        //1. Phase offset per leg [Dim=4]
-        delta_phi_RH_rad = 0;
-        delta_phi_LH_rad = 0;
-        delta_phi_RF_rad = 0;
-        delta_phi_LF_rad = 0;
-
-        //2. Residual Joint Position Target(in radius) [Dim=12]
-        float delat_q_RH_HIP_rad = 0;
-        float delat_q_RH_THIGH_rad = 0;
-        float delat_q_RH_SHANK_rad = 0;
-
-        float delat_q_LH_HIP_rad = 0;
-        float delat_q_LH_THIGH_rad = 0;
-        float delat_q_LH_SHANK_rad = 0;
-
-        float delat_q_RF_HIP_rad = 0;
-        float delat_q_RF_THIGH_rad = 0;
-        float delat_q_RF_SHANK_rad = 0;
-
-        float delat_q_LF_HIP_rad = 0;
-        float delat_q_LF_THIGH_rad = 0;
-        float delat_q_LF_SHANK_rad = 0;
-
-        //1. Update phi
-        phi_RH_rad = ClampAngleRad0To2pi(phi_RH_rad + delta_phi_RH_rad + delta_phi_0_rad); 
-        phi_RF_rad = ClampAngleRad0To2pi(phi_RF_rad + delta_phi_RF_rad + delta_phi_0_rad); 
-        phi_LH_rad = ClampAngleRad0To2pi(phi_LH_rad + delta_phi_LH_rad + delta_phi_0_rad); 
-        phi_LF_rad = ClampAngleRad0To2pi(phi_LF_rad + delta_phi_LF_rad + delta_phi_0_rad); 
-        Debug.Log($"[INFO][QuadrupedAgentController][TestCPGUpdate][num_update={num_update}]phi_RH_rad={phi_RH_rad}");
-        // Debug.Log($"[INFO][QuadrupedAgentController][TestCPGUpdate][num_update={num_update}]phi_RH_rad={phi_RF_rad}");
-        // Debug.Log($"[INFO][QuadrupedAgentController][TestCPGUpdate][num_update={num_update}]phi_RH_rad={phi_LH_rad}");
-        // Debug.Log($"[INFO][QuadrupedAgentController][TestCPGUpdate][num_update={num_update}]phi_RH_rad={phi_LF_rad}");
-
-        //2. Endeffector position at this time step
-        Vector3 p_RH = CPG_p_phi(phi_RH_rad,"RH");
-        // Vector3 p_RF = CPG_p_phi(phi_RF_rad,"RF");
-        // Vector3 p_LH = CPG_p_phi(phi_LH_rad,"LH");
-        // Vector3 p_LF = CPG_p_phi(phi_LF_rad,"LF");
-        Debug.Log($"[INFO][QuadrupedAgentController][TestCPGUpdate][num_update={num_update}]p_RH={p_RH}");
-        // Debug.Log($"[INFO][QuadrupedAgentController][TestCPGUpdate][num_update={num_update}]p_RF={p_RF}");
-        // Debug.Log($"[INFO][QuadrupedAgentController][TestCPGUpdate][num_update={num_update}]p_LH={p_LH}");
-        // Debug.Log($"[INFO][QuadrupedAgentController][TestCPGUpdate][num_update={num_update}]p_LF={p_LF}");
-        ef_position_indicator_RH.transform.position = p_RH + base_inertia.position;
-
-        //3. Calculate target joint angle from IKd
-        List<float> q_RH_deg = iK_RH.CalculateIK_rela(p_RH.x,p_RH.y,p_RH.z);//in degree
-        // List<float> q_RF_deg = iK_RF.CalculateIK_rela(p_RF.x,p_RF.y,p_RF.z);//in degree
-        // List<float> q_LH_deg = iK_LH.CalculateIK_rela(p_LH.x,p_LH.y,p_LH.z);//in degree 
-        // List<float> q_LF_deg = iK_LF.CalculateIK_rela(p_LF.x,p_LF.y,p_LF.z);//in degree
-
-        float gamma_RH_deg = q_RH_deg[0] + delat_q_RH_HIP_rad * Mathf.Rad2Deg ;
-        float alpha_RH_deg = q_RH_deg[1] + delat_q_RH_THIGH_rad * Mathf.Rad2Deg;
-        float beta_RH_deg  = q_RH_deg[2] + delat_q_RH_SHANK_rad * Mathf.Rad2Deg;
-
-        // float gamma_RF_deg = q_RF_deg[0] + delat_q_RF_HIP_rad * Mathf.Rad2Deg ;
-        // float alpha_RF_deg = q_RF_deg[1] + delat_q_RF_THIGH_rad * Mathf.Rad2Deg;
-        // float beta_RF_deg  = q_RF_deg[2] + delat_q_RF_SHANK_rad * Mathf.Rad2Deg;
-
-        // float gamma_LH_deg = q_LH_deg[0] + delat_q_LH_HIP_rad * Mathf.Rad2Deg ;
-        // float alpha_LH_deg = q_LH_deg[1] + delat_q_LH_THIGH_rad * Mathf.Rad2Deg;
-        // float beta_LH_deg  = q_LH_deg[2] + delat_q_LH_SHANK_rad * Mathf.Rad2Deg;
-
-        // float gamma_LF_deg = q_LF_deg[0] + delat_q_LF_HIP_rad * Mathf.Rad2Deg ;
-        // float alpha_LF_deg = q_LF_deg[1] + delat_q_LF_THIGH_rad * Mathf.Rad2Deg;
-        // float beta_LF_deg  = q_LF_deg[2] + delat_q_LF_SHANK_rad * Mathf.Rad2Deg;
-
-
-        // ------------------Apply the action-----------------------
-        articulationBody_RH_HIP.SetDriveTarget(ArticulationDriveAxis.X,gamma_RH_deg);
-        articulationBody_RH_THIGH.SetDriveTarget(ArticulationDriveAxis.X,alpha_RH_deg);
-        articulationBody_RH_SHANK.SetDriveTarget(ArticulationDriveAxis.X,beta_RH_deg);
-
-        // articulationBody_RF_HIP.SetDriveTarget(ArticulationDriveAxis.X,gamma_RF_deg);
-        // articulationBody_RF_THIGH.SetDriveTarget(ArticulationDriveAxis.X,alpha_RF_deg);
-        // articulationBody_RF_SHANK.SetDriveTarget(ArticulationDriveAxis.X,beta_RF_deg);
-
-        // articulationBody_LH_HIP.SetDriveTarget(ArticulationDriveAxis.X,gamma_LH_deg);
-        // articulationBody_LH_THIGH.SetDriveTarget(ArticulationDriveAxis.X,alpha_LH_deg);
-        // articulationBody_LH_SHANK.SetDriveTarget(ArticulationDriveAxis.X,beta_LH_deg);
-
-        // articulationBody_LF_HIP.SetDriveTarget(ArticulationDriveAxis.X,gamma_LF_deg);
-        // articulationBody_LF_THIGH.SetDriveTarget(ArticulationDriveAxis.X,alpha_LF_deg);
-        // articulationBody_LF_SHANK.SetDriveTarget(ArticulationDriveAxis.X,beta_LF_deg);
-    }
-    public void TestIK()
-    {
-        List<float> q_RH_deg = iK_RH.CalculateIK_rela(ef_position_indicator_RH.transform.position.x-base_inertia.position.x,ef_position_indicator_RH.transform.position.y-base_inertia.position.y,ef_position_indicator_RH.transform.position.z-base_inertia.position.z);//in degree
-        float gamma_RH_deg = q_RH_deg[0] ;
-        float alpha_RH_deg = q_RH_deg[1] ;
-        float beta_RH_deg  = q_RH_deg[2] ;
-        // ------------------Apply the action-----------------------
-        articulationBody_RH_HIP.SetDriveTarget(ArticulationDriveAxis.X,gamma_RH_deg);
-        articulationBody_RH_THIGH.SetDriveTarget(ArticulationDriveAxis.X,alpha_RH_deg);
-        articulationBody_RH_SHANK.SetDriveTarget(ArticulationDriveAxis.X,beta_RH_deg);
-    }
     public float ClampAngleRad0To2pi(float angle)
     {
         if(angle > 2 * Mathf.PI)
@@ -373,7 +277,7 @@ public class QuadrupedAgentController : AgentControllerBase
 
         foreach (Transform child_tf in allChildren)
         {
-            Debug.Log(child_tf.name);
+            // Debug.Log(child_tf.name);
             if (child_tf.name == "base_inertia")
             {
                 base_inertia = child_tf;                
@@ -544,6 +448,113 @@ public class QuadrupedAgentController : AgentControllerBase
         pos_B_E_LH_0 = LH_FOOT.position - base_inertia.position;
         pos_B_E_LF_0 = LF_FOOT.position - base_inertia.position;
     }
+
+    //-----------------------------------------Testing Function-----------------------------------------------
+    // private int num_update=0;
+    // public GameObject ef_position_indicator_RH;
+    // void Update()
+    // {
+    //     num_update++;
+    //     TestIK();
+    // }
+
+    // public void TestCPGUpdate()
+    // {
+    //     //1. Phase offset per leg [Dim=4]
+    //     delta_phi_RH_rad = 0;
+    //     delta_phi_LH_rad = 0;
+    //     delta_phi_RF_rad = 0;
+    //     delta_phi_LF_rad = 0;
+
+    //     //2. Residual Joint Position Target(in radius) [Dim=12]
+    //     float delat_q_RH_HIP_rad = 0;
+    //     float delat_q_RH_THIGH_rad = 0;
+    //     float delat_q_RH_SHANK_rad = 0;
+
+    //     float delat_q_LH_HIP_rad = 0;
+    //     float delat_q_LH_THIGH_rad = 0;
+    //     float delat_q_LH_SHANK_rad = 0;
+
+    //     float delat_q_RF_HIP_rad = 0;
+    //     float delat_q_RF_THIGH_rad = 0;
+    //     float delat_q_RF_SHANK_rad = 0;
+
+    //     float delat_q_LF_HIP_rad = 0;
+    //     float delat_q_LF_THIGH_rad = 0;
+    //     float delat_q_LF_SHANK_rad = 0;
+
+    //     //1. Update phi
+    //     phi_RH_rad = ClampAngleRad0To2pi(phi_RH_rad + delta_phi_RH_rad + delta_phi_0_rad); 
+    //     phi_RF_rad = ClampAngleRad0To2pi(phi_RF_rad + delta_phi_RF_rad + delta_phi_0_rad); 
+    //     phi_LH_rad = ClampAngleRad0To2pi(phi_LH_rad + delta_phi_LH_rad + delta_phi_0_rad); 
+    //     phi_LF_rad = ClampAngleRad0To2pi(phi_LF_rad + delta_phi_LF_rad + delta_phi_0_rad); 
+    //     Debug.Log($"[INFO][QuadrupedAgentController][TestCPGUpdate][num_update={num_update}]phi_RH_rad={phi_RH_rad}");
+    //     // Debug.Log($"[INFO][QuadrupedAgentController][TestCPGUpdate][num_update={num_update}]phi_RH_rad={phi_RF_rad}");
+    //     // Debug.Log($"[INFO][QuadrupedAgentController][TestCPGUpdate][num_update={num_update}]phi_RH_rad={phi_LH_rad}");
+    //     // Debug.Log($"[INFO][QuadrupedAgentController][TestCPGUpdate][num_update={num_update}]phi_RH_rad={phi_LF_rad}");
+
+    //     //2. Endeffector position at this time step
+    //     Vector3 p_RH = CPG_p_phi(phi_RH_rad,"RH");
+    //     // Vector3 p_RF = CPG_p_phi(phi_RF_rad,"RF");
+    //     // Vector3 p_LH = CPG_p_phi(phi_LH_rad,"LH");
+    //     // Vector3 p_LF = CPG_p_phi(phi_LF_rad,"LF");
+    //     Debug.Log($"[INFO][QuadrupedAgentController][TestCPGUpdate][num_update={num_update}]p_RH={p_RH}");
+    //     // Debug.Log($"[INFO][QuadrupedAgentController][TestCPGUpdate][num_update={num_update}]p_RF={p_RF}");
+    //     // Debug.Log($"[INFO][QuadrupedAgentController][TestCPGUpdate][num_update={num_update}]p_LH={p_LH}");
+    //     // Debug.Log($"[INFO][QuadrupedAgentController][TestCPGUpdate][num_update={num_update}]p_LF={p_LF}");
+    //     ef_position_indicator_RH.transform.position = p_RH + base_inertia.position;
+
+    //     //3. Calculate target joint angle from IKd
+    //     List<float> q_RH_deg = iK_RH.CalculateIK_rela(p_RH.x,p_RH.y,p_RH.z);//in degree
+    //     // List<float> q_RF_deg = iK_RF.CalculateIK_rela(p_RF.x,p_RF.y,p_RF.z);//in degree
+    //     // List<float> q_LH_deg = iK_LH.CalculateIK_rela(p_LH.x,p_LH.y,p_LH.z);//in degree 
+    //     // List<float> q_LF_deg = iK_LF.CalculateIK_rela(p_LF.x,p_LF.y,p_LF.z);//in degree
+
+    //     float gamma_RH_deg = q_RH_deg[0] + delat_q_RH_HIP_rad * Mathf.Rad2Deg ;
+    //     float alpha_RH_deg = q_RH_deg[1] + delat_q_RH_THIGH_rad * Mathf.Rad2Deg;
+    //     float beta_RH_deg  = q_RH_deg[2] + delat_q_RH_SHANK_rad * Mathf.Rad2Deg;
+
+    //     // float gamma_RF_deg = q_RF_deg[0] + delat_q_RF_HIP_rad * Mathf.Rad2Deg ;
+    //     // float alpha_RF_deg = q_RF_deg[1] + delat_q_RF_THIGH_rad * Mathf.Rad2Deg;
+    //     // float beta_RF_deg  = q_RF_deg[2] + delat_q_RF_SHANK_rad * Mathf.Rad2Deg;
+
+    //     // float gamma_LH_deg = q_LH_deg[0] + delat_q_LH_HIP_rad * Mathf.Rad2Deg ;
+    //     // float alpha_LH_deg = q_LH_deg[1] + delat_q_LH_THIGH_rad * Mathf.Rad2Deg;
+    //     // float beta_LH_deg  = q_LH_deg[2] + delat_q_LH_SHANK_rad * Mathf.Rad2Deg;
+
+    //     // float gamma_LF_deg = q_LF_deg[0] + delat_q_LF_HIP_rad * Mathf.Rad2Deg ;
+    //     // float alpha_LF_deg = q_LF_deg[1] + delat_q_LF_THIGH_rad * Mathf.Rad2Deg;
+    //     // float beta_LF_deg  = q_LF_deg[2] + delat_q_LF_SHANK_rad * Mathf.Rad2Deg;
+
+
+    //     // ------------------Apply the action-----------------------
+    //     articulationBody_RH_HIP.SetDriveTarget(ArticulationDriveAxis.X,gamma_RH_deg);
+    //     articulationBody_RH_THIGH.SetDriveTarget(ArticulationDriveAxis.X,alpha_RH_deg);
+    //     articulationBody_RH_SHANK.SetDriveTarget(ArticulationDriveAxis.X,beta_RH_deg);
+
+    //     // articulationBody_RF_HIP.SetDriveTarget(ArticulationDriveAxis.X,gamma_RF_deg);
+    //     // articulationBody_RF_THIGH.SetDriveTarget(ArticulationDriveAxis.X,alpha_RF_deg);
+    //     // articulationBody_RF_SHANK.SetDriveTarget(ArticulationDriveAxis.X,beta_RF_deg);
+
+    //     // articulationBody_LH_HIP.SetDriveTarget(ArticulationDriveAxis.X,gamma_LH_deg);
+    //     // articulationBody_LH_THIGH.SetDriveTarget(ArticulationDriveAxis.X,alpha_LH_deg);
+    //     // articulationBody_LH_SHANK.SetDriveTarget(ArticulationDriveAxis.X,beta_LH_deg);
+
+    //     // articulationBody_LF_HIP.SetDriveTarget(ArticulationDriveAxis.X,gamma_LF_deg);
+    //     // articulationBody_LF_THIGH.SetDriveTarget(ArticulationDriveAxis.X,alpha_LF_deg);
+    //     // articulationBody_LF_SHANK.SetDriveTarget(ArticulationDriveAxis.X,beta_LF_deg);
+    // }
+    // public void TestIK()
+    // {
+    //     List<float> q_RH_deg = iK_RH.CalculateIK_rela(ef_position_indicator_RH.transform.position.x-base_inertia.position.x,ef_position_indicator_RH.transform.position.y-base_inertia.position.y,ef_position_indicator_RH.transform.position.z-base_inertia.position.z);//in degree
+    //     float gamma_RH_deg = q_RH_deg[0] ;
+    //     float alpha_RH_deg = q_RH_deg[1] ;
+    //     float beta_RH_deg  = q_RH_deg[2] ;
+    //     // ------------------Apply the action-----------------------
+    //     articulationBody_RH_HIP.SetDriveTarget(ArticulationDriveAxis.X,gamma_RH_deg);
+    //     articulationBody_RH_THIGH.SetDriveTarget(ArticulationDriveAxis.X,alpha_RH_deg);
+    //     articulationBody_RH_SHANK.SetDriveTarget(ArticulationDriveAxis.X,beta_RH_deg);
+    // }
 
 
 }

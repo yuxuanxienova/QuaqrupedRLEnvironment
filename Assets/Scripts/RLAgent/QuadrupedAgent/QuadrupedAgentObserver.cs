@@ -69,6 +69,7 @@ public class QuadrupedAgentObserver : AgentObserverBase
     private ArticulationBody articulationBody_LF_THIGH;
     private ArticulationBody articulationBody_LF_SHANK;
 
+    private QuadrupedAgentController m_QuadrupedAgentController;
     public override List<float> GetObservations()
     {
         observation_list = new List<float>();
@@ -122,35 +123,22 @@ public class QuadrupedAgentObserver : AgentObserverBase
         AddToObservationList(articulationBody_LF_SHANK.jointVelocity[0],name:"[articulationBody_LF_SHANK.jointVelocity[0]");
 
         //1.6 CPG Phase Information[Dim=12]
-        // AddToObservationList(delta_phi_RH_rad,name:"[delta_phi_RH_rad]");
-        // AddToObservationList(delta_phi_RF_rad,name:"[delta_phi_RF_rad]");
-        // AddToObservationList(delta_phi_LH_rad,name:"[delta_phi_LH_rad]");
-        // AddToObservationList(delta_phi_LF_rad,name:"[delta_phi_LF_rad]");
+        
+        AddToObservationList(m_QuadrupedAgentController.delta_phi_RH_rad,name:"[delta_phi_RH_rad]");
+        AddToObservationList(m_QuadrupedAgentController.delta_phi_RF_rad,name:"[delta_phi_RF_rad]");
+        AddToObservationList(m_QuadrupedAgentController.delta_phi_LH_rad,name:"[delta_phi_LH_rad]");
+        AddToObservationList(m_QuadrupedAgentController.delta_phi_LF_rad,name:"[delta_phi_LF_rad]");
 
 
-        // AddToObservationList(Mathf.Cos(phi_RH_rad),name:"[Mathf.Cos(phi_RH_rad)]");
-        // AddToObservationList(Mathf.Cos(phi_RF_rad),name:"[Mathf.Cos(phi_RF_rad)]");
-        // AddToObservationList(Mathf.Cos(phi_LH_rad),name:"[Mathf.Cos(phi_LH_rad)]");
-        // AddToObservationList(Mathf.Cos(phi_LF_rad),name:"[Mathf.Cos(phi_LF_rad)]");
+        AddToObservationList(Mathf.Cos(m_QuadrupedAgentController.phi_RH_rad),name:"[Mathf.Cos(phi_RH_rad)]");
+        AddToObservationList(Mathf.Cos(m_QuadrupedAgentController.phi_RF_rad),name:"[Mathf.Cos(phi_RF_rad)]");
+        AddToObservationList(Mathf.Cos(m_QuadrupedAgentController.phi_LH_rad),name:"[Mathf.Cos(phi_LH_rad)]");
+        AddToObservationList(Mathf.Cos(m_QuadrupedAgentController.phi_LF_rad),name:"[Mathf.Cos(phi_LF_rad)]");
 
-        // AddToObservationList(Mathf.Sin(phi_RH_rad),name:"[Mathf.Sin(phi_RH_rad)]");
-        // AddToObservationList(Mathf.Sin(phi_RF_rad),name:"[Mathf.Sin(phi_RF_rad)]");
-        // AddToObservationList(Mathf.Sin(phi_LH_rad),name:"[Mathf.Sin(phi_LH_rad)]");
-        // AddToObservationList(Mathf.Sin(phi_LF_rad),name:"[Mathf.Sin(phi_LF_rad)]");
-
-
-
-        // //current ragdoll velocity. normalized
-        // sensor.AddObservation(Vector3.Distance(velGoal, avgVel));
-        // //avg body vel relative to cube
-        // sensor.AddObservation(m_OrientationCube.transform.InverseTransformDirection(avgVel));
-        // //vel goal relative to cube
-        // sensor.AddObservation(m_OrientationCube.transform.InverseTransformDirection(velGoal));
-        // //rotation delta
-        // sensor.AddObservation(Quaternion.FromToRotation(body.forward, dirToTarget));
-
-        // //Add pos of target relative to orientation cube
-        // sensor.AddObservation(m_OrientationCube.transform.InverseTransformPoint(m_Target.transform.position));
+        AddToObservationList(Mathf.Sin(m_QuadrupedAgentController.phi_RH_rad),name:"[Mathf.Sin(phi_RH_rad)]");
+        AddToObservationList(Mathf.Sin(m_QuadrupedAgentController.phi_RF_rad),name:"[Mathf.Sin(phi_RF_rad)]");
+        AddToObservationList(Mathf.Sin(m_QuadrupedAgentController.phi_LH_rad),name:"[Mathf.Sin(phi_LH_rad)]");
+        AddToObservationList(Mathf.Sin(m_QuadrupedAgentController.phi_LF_rad),name:"[Mathf.Sin(phi_LF_rad)]");
 
         //2 Observation Type: Exteroception
 
@@ -213,6 +201,7 @@ public class QuadrupedAgentObserver : AgentObserverBase
 
     public override void OnAgentStart()
     {
+        m_QuadrupedAgentController = GetComponent<QuadrupedAgentController>();
 
     }
     public override void OnEpisodeBegin()

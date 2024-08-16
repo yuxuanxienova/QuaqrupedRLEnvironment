@@ -20,7 +20,6 @@ public class BallAgentObserver : AgentObserverBase
 
     public override void OnAgentStart()
     {
-        throw new System.NotImplementedException();
     }
 
     public override void OnEpisodeBegin()

@@ -27,7 +27,6 @@ public class BallAgentRewardCalculator : AgentRewardCalculatorBase
 
     public override void OnAgentStart()
     {
-        throw new System.NotImplementedException();
     }
 
     public override void OnEpisodeBegin()

@@ -54,6 +54,5 @@ public class BallAgentController : AgentControllerBase
 
     public override void OnAgentStart()
     {
-        throw new System.NotImplementedException();
     }
 }

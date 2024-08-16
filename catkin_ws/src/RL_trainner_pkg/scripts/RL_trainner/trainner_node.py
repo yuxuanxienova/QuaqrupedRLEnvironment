@@ -24,8 +24,8 @@ def clean_log_dir(log_dir):
 class TrainnerNode:
     def __init__(self) -> None:
         #Parameters
-        self.state_dim = 8
-        self.action_dim = 2
+        self.state_dim = 73#73
+        self.action_dim = 16#16
         self.trainTime=1000
         self.log_dir= "./catkin_ws/src/RL_trainner_pkg/logs"
         self.save_dir = "./catkin_ws/src/RL_trainner_pkg/models/"
@@ -47,7 +47,7 @@ class TrainnerNode:
 
     def run_node(self):
         #1.Register Function Runner
-        self.run_function(self.updateNetwork,interval=0.1)
+        self.run_function(self.updateNetwork,interval=0.2)
         self.run_function(self.updateInfo,interval=1)
         #2. Register Publishers
         self.register_event_publisher( topic_name="/unity/RL_Agent/event_sample_action_response",data_class=Float32IDMsg)
@@ -125,7 +125,8 @@ class TrainnerNode:
         next_state = np.array(msg.next_state)
         trancated_flag = msg.trancated_flag
         transition = (state,action,reward,next_state)
-        self.agent.memory.put(transition)
+        if(state.shape[0]==self.state_dim and action.shape[0]==self.action_dim and next_state.shape[0]==self.state_dim):
+            self.agent.memory.put(transition)
     def onCall_handleEvent_sampleAction(self,msg):
         response_topic_name="/unity/RL_Agent/event_sample_action_response"
         publisher = self.publishersDict[response_topic_name]
