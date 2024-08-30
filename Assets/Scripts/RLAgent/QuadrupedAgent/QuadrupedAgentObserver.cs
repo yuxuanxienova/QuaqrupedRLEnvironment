@@ -68,7 +68,65 @@ public class QuadrupedAgentObserver : AgentObserverBase
     private ArticulationBody articulationBody_LF_HIP;
     private ArticulationBody articulationBody_LF_THIGH;
     private ArticulationBody articulationBody_LF_SHANK;
+    public ArticulationBody GetArticulationBody_RH_HIP()
+    {
+        return articulationBody_RH_HIP;
+    }
 
+    public ArticulationBody GetArticulationBody_RH_THIGH()
+    {
+        return articulationBody_RH_THIGH;
+    }
+
+    public ArticulationBody GetArticulationBody_RH_SHANK()
+    {
+        return articulationBody_RH_SHANK;
+    }
+
+    public ArticulationBody GetArticulationBody_LH_HIP()
+    {
+        return articulationBody_LH_HIP;
+    }
+
+    public ArticulationBody GetArticulationBody_LH_THIGH()
+    {
+        return articulationBody_LH_THIGH;
+    }
+
+    public ArticulationBody GetArticulationBody_LH_SHANK()
+    {
+        return articulationBody_LH_SHANK;
+    }
+
+    public ArticulationBody GetArticulationBody_RF_HIP()
+    {
+        return articulationBody_RF_HIP;
+    }
+
+    public ArticulationBody GetArticulationBody_RF_THIGH()
+    {
+        return articulationBody_RF_THIGH;
+    }
+
+    public ArticulationBody GetArticulationBody_RF_SHANK()
+    {
+        return articulationBody_RF_SHANK;
+    }
+
+    public ArticulationBody GetArticulationBody_LF_HIP()
+    {
+        return articulationBody_LF_HIP;
+    }
+
+    public ArticulationBody GetArticulationBody_LF_THIGH()
+    {
+        return articulationBody_LF_THIGH;
+    }
+
+    public ArticulationBody GetArticulationBody_LF_SHANK()
+    {
+        return articulationBody_LF_SHANK;
+    }
     private QuadrupedAgentController m_QuadrupedAgentController;
     public override List<float> GetObservations()
     {

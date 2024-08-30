@@ -280,8 +280,8 @@ class SAC_Agent:
         self.log_alpha_optimizer.load_state_dict(checkpoint['log_alpha_optimizer_state_dict'])
 
     def setup_agent(self):
-        self.actor = Actor(hidden_size=self.hidden_dim, hidden_layers=1, actor_lr=self.actor_lr, action_bound=self.action_bound,state_dim=self.state_dim, action_dim=self.action_dim,device=self.device)         
-        self.critic = Critic(hidden_size=self.hidden_dim, hidden_layers=1,critic_lr=self.critic_lr, action_bound=self.action_bound,state_dim=self.state_dim,action_dim=self.action_dim,device=self.device)
+        self.actor = Actor(hidden_size=self.hidden_dim, hidden_layers=4, actor_lr=self.actor_lr, action_bound=self.action_bound,state_dim=self.state_dim, action_dim=self.action_dim,device=self.device)         
+        self.critic = Critic(hidden_size=self.hidden_dim, hidden_layers=4,critic_lr=self.critic_lr, action_bound=self.action_bound,state_dim=self.state_dim,action_dim=self.action_dim,device=self.device)
 
     def get_action(self, s: np.ndarray, train: bool) -> np.ndarray:
         """
