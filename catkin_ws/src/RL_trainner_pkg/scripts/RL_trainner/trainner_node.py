@@ -9,7 +9,7 @@ from std_msgs.msg import String,Float32
 from std_msgs.msg import Float32MultiArray
 from RL_trainner_pkg.msg import TransitionMsg, Float32IDMsg
 from RL_trainner_pkg.srv import ProcessArray, ProcessArrayResponse
-from SAC import SAC_Agent
+from SAC import SAC_Agent, SAC_PriorityRB_Agent
 import concurrent.futures
 from torch.utils.tensorboard import SummaryWriter
 import shutil
@@ -41,7 +41,7 @@ class TrainnerNode:
         self.handleFuncToServiceName = {}
         self.threadPoolExecutor = concurrent.futures.ThreadPoolExecutor(max_workers=20)
         #Storage Field        
-        self.agent = SAC_Agent(self.state_dim,self.action_dim)
+        self.agent = SAC_PriorityRB_Agent(self.state_dim,self.action_dim)
         self.num_update=0
         self.timePassed=0
 

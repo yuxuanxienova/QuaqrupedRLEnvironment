@@ -7,7 +7,7 @@ import warnings
 from typing import Union
 # from utils import ReplayBuffer, get_env, run_episode
 import torch.nn.functional as F
-from ReplayBuffer import ReplayBuffer
+from ReplayBuffer import ReplayBuffer, PriorityReplayBuffer
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 warnings.filterwarnings("ignore", category=UserWarning)
 from torch.utils.tensorboard import SummaryWriter
@@ -396,7 +396,201 @@ class SAC_Agent:
         self.critic_target_update(base_net=self.critic.critic_Q_second_net, target_net=self.critic.critic_Q_second_target_net, tau=self.tau, soft_update=True)
         return loss_Q1, loss_Q2, actor_loss, alpha_loss
 #---------------------------------------------------------------------------------------------
+class SAC_PriorityRB_Agent:
+    def __init__(self,state_dim,action_dim):
+        # Environment variables. You don't need to change this.
+        self.state_dim = state_dim
+        self.action_dim = action_dim
 
+        self.batch_size = 200#200
+        self.min_buffer_size = 200#1000
+        self.max_buffer_size = 100000
+        # If your PC possesses a GPU, you should be able to use it for training, 
+        # as self.device should be 'cuda' in that case.
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        print("Using device: {}".format(self.device))
+        self.memory = PriorityReplayBuffer(self.min_buffer_size, self.max_buffer_size, self.device)
+        
+
+        
+        #------------------------
+        self.tau = 0.1
+        self.gamma = 0.98
+        self.action_bound = 1
+        self.criterion = nn.MSELoss() 
+        self.actor_lr = 3e-4
+        self.critic_lr = 3e-3
+        self.hidden_dim = 512
+        #--------------------------------
+        
+        #----------------Module Used to Adjust Entropy---------------------------------
+        # use log alpha to stablize the training
+        self.target_entropy = 0
+        alpha_lr = 0.001
+        self.log_alpha = torch.tensor(np.log(0.001), dtype=torch.float)
+        self.log_alpha.requires_grad = True  
+        self.log_alpha_optimizer = torch.optim.Adam([self.log_alpha],lr=alpha_lr)
+        #------------------------------------------------------------------------------
+        self.setup_agent()
+        
+    def save_model(self, path: str):
+        torch.save({
+            'actor_state_dict': self.actor.actor_f_mu_net.state_dict(),
+            'actor_optimizer_state_dict': self.actor.optimizer.state_dict(),
+            'critic_Q_net_state_dict': self.critic.critic_Q_net.state_dict(),
+            'critic_Q_target_net_state_dict': self.critic.critic_Q_target_net.state_dict(),
+            'critic_Q_second_net_state_dict': self.critic.critic_Q_second_net.state_dict(),
+            'critic_Q_second_target_net_state_dict': self.critic.critic_Q_second_target_net.state_dict(),
+            'critic_Q_net_optimizer_state_dict': self.critic.optimizer_Q_net.state_dict(),
+            'critic_Q_second_net_optimizer_state_dict': self.critic.optimizer_Q_second_net.state_dict(),
+            'log_alpha': self.log_alpha,
+            'log_alpha_optimizer_state_dict': self.log_alpha_optimizer.state_dict()
+        }, path)
+
+    def load_model(self, path: str):
+        checkpoint = torch.load(path)
+        self.actor.actor_f_mu_net.load_state_dict(checkpoint['actor_state_dict'])
+        self.actor.optimizer.load_state_dict(checkpoint['actor_optimizer_state_dict'])
+        self.critic.critic_Q_net.load_state_dict(checkpoint['critic_Q_net_state_dict'])
+        self.critic.critic_Q_target_net.load_state_dict(checkpoint['critic_Q_target_net_state_dict'])
+        self.critic.critic_Q_second_net.load_state_dict(checkpoint['critic_Q_second_net_state_dict'])
+        self.critic.critic_Q_second_target_net.load_state_dict(checkpoint['critic_Q_second_target_net_state_dict'])
+        self.critic.optimizer_Q_net.load_state_dict(checkpoint['critic_Q_net_optimizer_state_dict'])
+        self.critic.optimizer_Q_second_net.load_state_dict(checkpoint['critic_Q_second_net_optimizer_state_dict'])
+        self.log_alpha = checkpoint['log_alpha']
+        self.log_alpha_optimizer.load_state_dict(checkpoint['log_alpha_optimizer_state_dict'])
+
+    def setup_agent(self):
+        self.actor = Actor(hidden_size=self.hidden_dim, hidden_layers=4, actor_lr=self.actor_lr, action_bound=self.action_bound,state_dim=self.state_dim, action_dim=self.action_dim,device=self.device)         
+        self.critic = Critic(hidden_size=self.hidden_dim, hidden_layers=4,critic_lr=self.critic_lr, action_bound=self.action_bound,state_dim=self.state_dim,action_dim=self.action_dim,device=self.device)
+
+    def get_action(self, s: np.ndarray, train: bool) -> np.ndarray:
+        """
+        :param s: np.ndarray, state. shape (state_dim, )
+        :param train: boolean to indicate if you are in eval or train mode. 
+                    You can find it useful if you want to sample from deterministic policy.
+        :return: np.ndarray, action to apply on the environment, shape (action_dim,)
+        """        
+        #if training, we schocahsticly sample action
+        if(train):
+            deterministic = 0
+        else:
+            deterministic = 1
+        
+        #Convert State to torch tensor
+        s = torch.tensor(s)
+        #Move state to GPU
+        s = s.to(self.device)
+        #get action
+        action, log_prob = self.actor.get_action_and_log_prob(state=s,deterministic=deterministic)
+        
+        #Convert action to np array
+        action = action.to("cpu")
+        action = action.detach().numpy().reshape(-1)
+        assert action.shape == (self.action_dim,), 'Incorrect action shape.'
+        assert isinstance(action, np.ndarray ), 'Action dtype must be np.ndarray' 
+        return action
+
+    @staticmethod
+    def run_gradient_update_step(object: Union[Actor, Critic], loss: torch.Tensor):
+        '''
+        This function takes in a object containing trainable parameters and an optimizer, 
+        and using a given loss, runs one step of gradient update. If you set up trainable parameters 
+        and optimizer inside the object, you could find this function useful while training.
+        :param object: object containing trainable parameters and an optimizer
+        '''
+        object.optimizer.zero_grad()
+        loss.mean().backward()
+        object.optimizer.step()
+
+    def critic_target_update(self, base_net: NeuralNetwork, target_net: NeuralNetwork, 
+                             tau: float, soft_update: bool):
+        '''
+        This method updates the target network parameters using the source network parameters.
+        If soft_update is True, then perform a soft update, otherwise a hard update (copy).
+        :param base_net: source network
+        :param target_net: target network
+        :param tau: soft update parameter
+        :param soft_update: boolean to indicate whether to perform a soft update or not
+        '''
+        for param_target, param in zip(target_net.parameters(), base_net.parameters()):
+            if soft_update:
+                param_target.data.copy_(param_target.data * (1.0 - tau) + param.data * tau)
+            else:
+                param_target.data.copy_(param.data)
+                
+    def calc_target(self, rewards, next_states, deterministic):  # Calculate TD Target Q
+        next_actions, log_prob = self.actor.get_action_and_log_prob(next_states,deterministic=deterministic)
+        entropy = -log_prob
+        q1_value = self.critic.critic_Q_target_net(torch.cat([next_states,next_actions], dim=1))
+        q2_value = self.critic.critic_Q_second_target_net(torch.cat([next_states,next_actions], dim=1))
+        next_value = torch.min(q1_value,
+                               q2_value) + self.log_alpha.exp() * entropy
+        td_target = rewards + self.gamma * next_value 
+        return td_target
+    def updateNetwork(self):
+        '''
+        This function represents one training iteration for the agent. It samples a batch 
+        from the replay buffer,and then updates the policy and critic networks 
+        using the sampled batch.
+        '''
+
+        # Batch sampling
+        indices, s_batch, a_batch, r_batch, s_prime_batch = self.memory.sample(self.batch_size)
+
+        #-----------0. move inputs to GPU----------
+        s_batch = s_batch.to(self.device) 
+        #-----------1. Update Q--------------
+        #sample actions stochasticly from current policy
+        Q_td_target = self.calc_target(r_batch, s_prime_batch, deterministic=False)#dim:(N_sample,N_action)
+        current_Q1 = self.critic.critic_Q_net(torch.cat([s_batch,a_batch], dim=1))
+        current_Q2 = self.critic.critic_Q_second_net(torch.cat([s_batch,a_batch], dim=1))
+        loss_Q1 = torch.mean(F.mse_loss(current_Q1 , Q_td_target.detach()))
+        loss_Q2 = torch.mean(F.mse_loss(current_Q2 , Q_td_target.detach()))
+        
+        self.critic.optimizer_Q_net.zero_grad()
+        loss_Q1.backward()
+        self.critic.optimizer_Q_net.step()
+        
+        self.critic.optimizer_Q_second_net.zero_grad()
+        loss_Q2.backward()
+        self.critic.optimizer_Q_second_net.step()
+
+        #---------2. Update Priorities----------------
+        # Compute TD errors and update priorities
+        with torch.no_grad():
+            td_errors_np = torch.abs(Q_td_target.mean(dim=1, keepdim=True) - torch.min(current_Q1, current_Q2)).cpu().numpy()
+            Q_td_target_np = Q_td_target.mean(dim=1, keepdim=True).detach().cpu().numpy()
+        priorities_np = td_errors_np + Q_td_target_np + 1e-6  # Convert to float and add small epsilon to avoid zero priority
+        # Ensure non-negative priorities by adding a constant offset
+        min_priority = np.min(priorities_np)
+        if min_priority < 0:
+            priorities_np += abs(min_priority) + 1e-6  # Shift all priorities to be non-negative
+        priorities =[arr.item() for arr in priorities_np]
+        self.memory.update_priorities(indices, priorities= priorities)
+                
+        
+        #---------3. Update pi--------------------
+        new_actions, log_prob = self.actor.get_action_and_log_prob(s_batch,deterministic=False)
+        entropy = -log_prob
+        q1_value_new = self.critic.critic_Q_net(torch.cat([s_batch,new_actions],dim=1))
+        q2_value_new = self.critic.critic_Q_second_net(torch.cat([s_batch,new_actions],dim=1))
+        actor_loss = torch.mean(-self.log_alpha.exp() * entropy - torch.min(q1_value_new, q2_value_new))
+        
+        self.actor.optimizer.zero_grad()
+        actor_loss.backward()
+        self.actor.optimizer.step()
+        #------------**Update alpha--------------
+        
+        alpha_loss = torch.mean((entropy - self.target_entropy).detach() * self.log_alpha.exp())
+        self.log_alpha_optimizer.zero_grad()
+        alpha_loss.backward()
+        self.log_alpha_optimizer.step()
+        #---------4. Update V_target----------------------
+        self.critic_target_update(base_net=self.critic.critic_Q_net, target_net=self.critic.critic_Q_target_net, tau=self.tau, soft_update=True)
+        self.critic_target_update(base_net=self.critic.critic_Q_second_net, target_net=self.critic.critic_Q_second_target_net, tau=self.tau, soft_update=True)
+        return loss_Q1, loss_Q2, actor_loss, alpha_loss
+#---------------------------------------------------------------------------------------------
 
 # This main function is provided here to enable some basic testing. 
 # ANY changes here WON'T take any effect while grading.
